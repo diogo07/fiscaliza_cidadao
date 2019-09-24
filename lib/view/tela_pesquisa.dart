@@ -1,10 +1,12 @@
 import 'package:fiscaliza_cidadao/controller/controller_tela_pesquisa.dart';
 import 'package:fiscaliza_cidadao/model/municipio.dart';
+import 'package:fiscaliza_cidadao/utils/utils.dart';
 import "package:flutter/material.dart";
 import "package:fiscaliza_cidadao/view/app_bar.dart";
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:connectivity/connectivity.dart';
+import 'package:toast/toast.dart';
 
 class TelaPesquisaMunicipios extends StatefulWidget{
 
@@ -67,10 +69,7 @@ class _TelaPesquisaMunicipios extends State<TelaPesquisaMunicipios> {
                           new Row(
                             children: <Widget>[
                               new Expanded(
-                                child: TextField( 
-                                // onChanged: (value) {
-                                //   buscarMunicipios(value);
-                                // },                       
+                                child: TextField(                
                                 controller: editingController,
                                   decoration: new InputDecoration(
                                     labelText: "Nome município",
@@ -109,7 +108,8 @@ class _TelaPesquisaMunicipios extends State<TelaPesquisaMunicipios> {
                                     ),
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
                                     // color: Color.fromRGBO(32, 56, 100, 1),
-                                    color: Color.fromRGBO(20, 184, 66, 1),
+                                    // color: Color.fromRGBO(20, 184, 66, 1),
+                                    color: Colors.blue[300],
                                     elevation: 4.0,
                                     splashColor: Colors.blueGrey,
                                     onPressed: () {
@@ -163,7 +163,8 @@ class _TelaPesquisaMunicipios extends State<TelaPesquisaMunicipios> {
           child: Container(            
             decoration: BoxDecoration(
               // color: Color.fromRGBO(32, 56, 100, 1),
-              color: Color.fromRGBO(20, 184, 66, 1),
+              // color: Color.fromRGBO(20, 184, 66, 1),
+              color: Colors.blue[300],
               borderRadius: new BorderRadius.all(Radius.circular(10.0)),
             ),
             child: criarLista(municipio),
@@ -216,54 +217,56 @@ class _TelaPesquisaMunicipios extends State<TelaPesquisaMunicipios> {
   }
 
   void buscarMunicipios() {
-    FocusScope.of(context).requestFocus(new FocusNode());
-    setState(() {
-      alterarStatusBusca(true); 
-    });
-        
-    fetchPost(removerCaracteresEspeciais(editingController.text));   
+
+    if(editingController.text.length > 0){
+      FocusScope.of(context).requestFocus(new FocusNode());
+      setState(() {
+        alterarStatusBusca(true); 
+      });          
+      buscarMunicipio(Utils.removerCaracteresEspeciais(editingController.text)); 
+    }else{
+      setState(() {
+       municipios.clear();
+      });
+      Toast.show("Você precisa digitar algo para buscar!", context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM);
+    }
+      
 
   }
 
-  String removerCaracteresEspeciais(String query){
-    query = query.toLowerCase();
-    query = query.replaceAll(' ', '_');
-    query = query.replaceAll('ã', '__tila__');
-    query = query.replaceAll('õ', '__tilo__');
-    query = query.replaceAll('â', '__circunflexoa__');
-    query = query.replaceAll('ê', '__circunflexoe__');
-    query = query.replaceAll('ô', '__circunflexoo__');
-    query = query.replaceAll('á', '__agudoa__');
-    query = query.replaceAll('é', '__agudoe__');
-    query = query.replaceAll('í', '__agudoi__');
-    query = query.replaceAll('ó', '__agudoo__');
-    query = query.replaceAll('ú', '__agudou__');
-    query = query.replaceAll('ç', '__cedilha__');
+  
 
-    return query;
-  }
-
-  fetchPost(String query) async {
+  buscarMunicipio(String query) async {
     
     var connectivityResult = await (Connectivity().checkConnectivity());
     if ((connectivityResult == ConnectivityResult.mobile) || (connectivityResult == ConnectivityResult.wifi)) {
-      final response = await http.get('http://api.carlosecelso.com.br/api/municipio/'+query+'/');
+      final response = await http.get(Utils.API + 'municipio/' + query+'/');
       if (response.statusCode == 200) {
         List<dynamic> dados = jsonDecode(response.body);
         List<Municipio> listaMunicipios = new List<Municipio>();
-        dados.forEach((dado){
-          listaMunicipios.add(new Municipio(dado['codigo'], dado['nome'], dado['uf'], dado['regiao']));
-        });
-        setState(() {
-        buscandoMunicipios = false;
-        municipios.clear();
-        municipios.addAll(listaMunicipios);
-        });
+
+        if(dados.length > 0){
+          dados.forEach((dado){
+            listaMunicipios.add(new Municipio(dado['codigo'], dado['nome'], dado['uf'], dado['regiao']));
+          });
+          setState(() {
+          buscandoMunicipios = false;
+          municipios.clear();
+          municipios.addAll(listaMunicipios);
+          });
+        }else{
+          setState(() {
+          buscandoMunicipios = false;
+          municipios.clear();
+          });
+          Toast.show("Nenhum município encontrado!", context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM);
+        }
         
       } else {    
         setState(() {
           buscandoMunicipios = false;
           municipios.clear(); 
+          Toast.show("Nenhum município encontrado!", context, duration: Toast.LENGTH_SHORT, gravity:  Toast.BOTTOM);
         });
       }
     }else{

@@ -7,41 +7,9 @@ import 'package:fiscaliza_cidadao/view/tela_ajuda.dart';
 
 class ControllerTelaHome extends Controller {
   
-  static void abrirTelaMunicipios(BuildContext context){
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TelaPesquisaMunicipios()
-      ),
-    ); 
-  }
 
-  static void abrirTelaRankings(BuildContext context){
-          
-  }
-
-  static void abrirTelaConsultasPersonalizadas(BuildContext context){
-          
-  }
    
-  static void abrirTelaSobre(BuildContext context){
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TelaSobre()
-      ),
-    ); 
-  }
 
-
-  static void abrirTelaAjuda(BuildContext context){
-    Navigator.push(
-      context, 
-      MaterialPageRoute(
-        builder: (context) => TelaAjuda()
-      )
-    );
-  }
 
   static void abrirMsg(BuildContext context, String titulo, String texto){
     _showDialog(context, titulo, texto);
@@ -67,16 +35,6 @@ class ControllerTelaHome extends Controller {
         );
       },
     );
-  }
-
-
-  static void abrirTelaContato(BuildContext context){
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => TelaContato()
-      ),
-    ); 
   }
 
  

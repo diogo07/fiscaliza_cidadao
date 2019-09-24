@@ -1,5 +1,6 @@
 import 'package:fiscaliza_cidadao/model/despesa.dart';
 import 'package:fiscaliza_cidadao/model/receita.dart';
+import 'package:fiscaliza_cidadao/utils/utils.dart';
 import 'package:fiscaliza_cidadao/view/graficos.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fiscaliza_cidadao/view/app_bar.dart';
@@ -22,15 +23,15 @@ class TelaMunicipio extends StatefulWidget {
 }
 
 class _TelaMunicipio extends State<TelaMunicipio> {
-  int codigo;
-  String nome;
+  int codigo, anoInicialReceita, anoFinalReceita, anoInicialDespesa, anoFinalDespesa;
+  String nome, tipoDespesas;
+  double receitaMedia, despesaMedia;
+  List<dynamic> despesas;
   List<Receita> listaReceitas;
   List<Despesa> listaDespesas;
   List<charts.Series<Receita, String>> seriesReceitas;
   List<charts.Series<Despesa, String>> seriesDespesas;
-  Widget graficoReceitasAnuais,
-      graficoDespesasAnuais,
-      graficoReceitasDespesasAnuais;
+  Widget graficoReceitasAnuais, graficoDespesasAnuais, graficoReceitasDespesasAnuais;
 
   _TelaMunicipio(int codigo, String nome) {
     this.codigo = codigo;
@@ -39,124 +40,124 @@ class _TelaMunicipio extends State<TelaMunicipio> {
 
   @override
   void initState() {
+    receitaMedia = 0.0;
+    despesaMedia = 0.0;
+    anoInicialReceita = 2014;
+    anoFinalReceita = 2018;
+    anoInicialDespesa = 2014;
+    anoFinalDespesa = 2018;
+    tipoDespesas = 'Valor Empenhado';
     graficoReceitasAnuais = new Container(width: 10, height: 10);
     listaReceitas = new List<Receita>();
     listaDespesas = new List<Despesa>();
-    seriesReceitas = new List<charts.Series<Receita, String>>();
+    seriesReceitas = new List<charts.Series<Receita, String>>();    
     buscarReceitas(this.codigo.toString());
     buscarDespesas(this.codigo.toString());
     super.initState();
   }
 
-  buscarReceitas(String query) async {
-    final response = await http
-        .get('http://api.carlosecelso.com.br/api/receita/municipio/' + query);
-    if (response.statusCode == 200) {
-      List<dynamic> dados = jsonDecode(response.body);
-      // List<dynamic> receitas = dados[0]['receitas'];
-      // receitas.forEach((receita){
-      //   listaReceitas.add(new Receita(int.parse(query), 2017, dados[0]['receitas'][3]['2017'],
-      //       null, null, Colors.green));
-      // });
-
-      print(dados);
-
-      try{
-        listaReceitas.add(new Receita(int.parse(query), 2014, dados[0]['receitas'][0]['2014'],
-            null, null, Colors.green));
-      } on RangeError catch(e){
-        listaReceitas.add(new Receita(int.parse(query), 2014, 0.0,
-            null, null, Colors.green));
-      }
-
-      try{
-        listaReceitas.add(new Receita(int.parse(query), 2015, dados[0]['receitas'][0]['2015'],
-            null, null, Colors.green));
-      } on RangeError catch(e){
-        listaReceitas.add(new Receita(int.parse(query), 2015, 0.0,
-            null, null, Colors.green));
-      }
-
-      try{
-        listaReceitas.add(new Receita(int.parse(query), 2016, dados[0]['receitas'][0]['2016'],
-            null, null, Colors.green));
-      } on RangeError catch(e){
-        listaReceitas.add(new Receita(int.parse(query), 2016, 0.0,
-            null, null, Colors.green));
-      }
-
-      try{
-        listaReceitas.add(new Receita(int.parse(query), 2017, dados[0]['receitas'][0]['2017'],
-            null, null, Colors.green));
-      } on RangeError catch(e){
-        listaReceitas.add(new Receita(int.parse(query), 2017, 0.0,
-            null, null, Colors.green));
-      }
-
-      try{
-        listaReceitas.add(new Receita(int.parse(query), 2018, dados[0]['receitas'][0]['2018'],
-            null, null, Colors.green));
-      } on RangeError catch(e){
-        listaReceitas.add(new Receita(int.parse(query), 2018, 0.0,
-            null, null, Colors.green));
-      }
-
-      setState(() {
-        graficoReceitasAnuais = Graficos.graficoDeColunasReceita(listaReceitas);
-      });
-    } else {
-      print('Failed to load post');
-    }
-  }
-
-  buscarDespesas(String query) async {
-    final response = await http
-        .get('http://api.carlosecelso.com.br/api/despesa/municipio/' + query);
-    if (response.statusCode == 200) {
-      List<dynamic> dados = jsonDecode(response.body);
-
-      List<dynamic> despesas = dados[0]['despesas'];
-      
-      despesas.forEach((despesa){
-        if(despesa['classificacao'] == 'Despesas Liquidadas'){
-          listaDespesas.add(new Despesa(int.parse(query), despesa['ano'], despesa['valor'],
-            null, null, Colors.red),);
-        }
-      });
-
-      setState(() {
-        graficoDespesasAnuais = Graficos.graficoDeColunasDespesa(listaDespesas);
-      });
-    } else {
-      print('Failed to load post');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-        body: new Column(children: <Widget>[
-      new GradientAppBarBack(this.nome),
-      new Expanded(
-          child: new ListView(shrinkWrap: true, children: <Widget>[
-        new Center(
-          child: new Column(
+    return Scaffold(
+        body: Column(children: <Widget>[
+      GradientAppBarBack(this.nome),
+      Expanded(
+          child: ListView(shrinkWrap: true, children: <Widget>[
+        Center(
+          child: Column(
             children: <Widget>[
-              new Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   componenteTitulo('Receitas Anuais'),
-                  componenteMenuGrafico(1),
                 ],
               ),
+
+              Padding(
+                          padding: EdgeInsets.only(
+                              top: 20, bottom: 40, left: 40, right: 40),
+                          child:
+                  Text(
+                    '\t\t\t\t\t\tOlá, você sabia que o município de '+nome+' arrecadou, em média, '+Utils.valorEmString(receitaMedia)+' por ano entre '+anoInicialReceita.toString()+' e '+anoFinalReceita.toString()+'. No gráfico apresentado a seguir, você pode verificar o valor arrecadado em cada ano.',
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(
+                fontFamily: 'Poppins', fontSize: 14, color: Colors.black87),
+                  ),
+                          
+              ),
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height * 0.7,
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                              top: 0, bottom: 40, left: 40, right: 40),
+                          child: graficoReceitasAnuais,
+                        ))
+              ]),
+
+              Padding(
+                          padding: EdgeInsets.only(
+                              top: 20, bottom: 40, left: 40, right: 40),
+                          child:
+                  Text(
+                    '\t\t\t\t\t\tPara saber mais informações sobre a forma como essa quantia foi arrecadada em cada ano, você pode tocar em uma das barras verdes do gráfico acima, de acordo com o ano que você deseja verificar.',
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(
+                fontFamily: 'Poppins', fontSize: 14, color: Colors.black87),
+                  ),
+                          
+              ),
+            ],
+
+
+          ),
+        ),
+
+        Center(
+          child: Column(
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  componenteTitulo('Despesas Anuais'),
+                ],
+              ),
+
+              Padding(
+                          padding: EdgeInsets.only(
+                              top: 20, bottom: 20, left: 40, right: 40),
+                          child:
+                  Text(
+                    '\t\t\t\t\t\tA média de despesas anuais do município de '+nome+', entre '+anoInicialDespesa.toString()+' e '+anoFinalDespesa.toString()+', é de '+Utils.valorEmString(despesaMedia)+'. O gráfico apresentado a seguir, expõe o valor de cada ano.',
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(
+                fontFamily: 'Poppins', fontSize: 14, color: Colors.black87),
+                  ),
+                          
+              ),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                  Padding(
+                    padding: new EdgeInsets.only(right:20),
+                    child: componenteMenuGrafico(),
+                  ),
+                  
+                ],
+              ),
+
               new Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   new Padding(
                     padding: new EdgeInsets.only(
-                              top: 40),
+                              top: 20),
                     child: new Text(
-                      'Valores em milhões',
+                      tipoDespesas,
                       style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 15,
@@ -174,192 +175,103 @@ class _TelaMunicipio extends State<TelaMunicipio> {
                         child: new Padding(
                           padding: new EdgeInsets.only(
                               top: 0, bottom: 40, left: 40, right: 40),
-                          child: graficoReceitasAnuais,
-                        ))
-                  ])
-            ],
-          ),
-        ),
-
-        new Center(
-          child: new Column(
-            children: <Widget>[
-              new Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  componenteTitulo('Despesas Anuais'),
-                  componenteMenuGrafico(2),
-                ],
-              ),
-              new Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  new Padding(
-                    padding: new EdgeInsets.only(
-                              top: 40),
-                    child: new Text(
-                      'Valores em milhões',
-                      style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 15,
-                          color: Colors.black87),
-                    ),
-                  )
-                ],
-              ),
-              new Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    new SizedBox(
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height * 0.7,
-                        child: new Padding(
-                          padding: new EdgeInsets.all(40),
                           child: graficoDespesasAnuais,
                         ))
-                  ])
+                  ]),
+              Padding(
+                          padding: EdgeInsets.only(
+                              top: 20, bottom: 40, left: 40, right: 40),
+                          child:
+                  Text(
+                    '\t\t\t\t\t\tAo tocar em alguma das barras vermelhas acima, você pode verificar a forma como foi distribuida a despesa de cada ano.',
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(
+                fontFamily: 'Poppins', fontSize: 14, color: Colors.black87),
+                  ),
+                          
+              ),
             ],
           ),
         ),
 
-        // new Center(
-        //   child: new Column(
-        //     children: <Widget>[
-
-        //       new Row(
-        //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        //         children: <Widget>[
-        //           Expanded(
-        //             flex: 8,
-        //             child: Padding(
-        //               padding: EdgeInsets.only(left: 40),
-        //               child: new Text(
-        //                 'Receitas x Despesas',
-        //                 style: TextStyle(
-        //                   fontFamily: 'Poppins',
-        //                   fontSize: 18,
-        //                   color: Colors.black45
-        //                 ),
-        //               ),
-        //             )
-        //           ),
-
-        //           Expanded(
-        //             flex: 2,
-        //             child: PopupMenuButton<int>(
-        //               icon: new Icon(
-        //                 Icons.insert_chart,
-        //                 color: Colors.black45,
-        //                 size: 30,
-        //               ),
-        //               // onSelected: (item) => mudarGraficoDespesasAnuais(item),
-        //               itemBuilder: (context) => [
-        //                 PopupMenuItem(
-        //                   value: 1,
-        //                   child: Text("Gráfico de Barras",
-        //                     style: TextStyle(
-        //                       fontFamily: 'Poppins',
-        //                       fontSize: 15,
-        //                       color: Colors.black87
-        //                     ),
-        //                   ),
-        //                 ),
-        //                 PopupMenuItem(
-        //                   value: 2,
-        //                   child: Text("Gráfico de Colunas",
-        //                     style: TextStyle(
-        //                       fontFamily: 'Poppins',
-        //                       fontSize: 15,
-        //                       color: Colors.black87
-        //                     ),
-        //                   ),
-        //                 ),
-        //                 PopupMenuItem(
-        //                   value: 3,
-        //                   child: Text("Gráfico de Linhas",
-        //                     style: TextStyle(
-        //                       fontFamily: 'Poppins',
-        //                       fontSize: 15,
-        //                       color: Colors.black87
-        //                     ),
-        //                   ),
-
-        //                 ),
-        //                 PopupMenuItem(
-        //                   value: 4,
-        //                   child: Text("Gráfico Pizza",
-        //                     style: TextStyle(
-        //                       fontFamily: 'Poppins',
-        //                       fontSize: 15,
-        //                       color: Colors.black87
-        //                     ),
-        //                   ),
-        //                 ),
-        //               ],
-        //             ),
-        //           )
-        //         ],
-        //       ),
-
-        //       new Row(
-        //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        //         children: <Widget>[
-        //           new SizedBox(
-        //             width: MediaQuery.of(context).size.width,
-        //             height: MediaQuery.of(context).size.height * 0.7,
-        //             child: new Padding(
-        //               padding: new EdgeInsets.all(40),
-        //               child: graficoReceitasDespesasAnuais,
-
-        //             )
-        //           )
-        //         ]
-        //       )
-        //     ],
-        // ),
-        // ),
+     
       ]))
     ]));
   }
 
-  void mudarGraficoReceitasAnuais(int item) {
-    print(item);
-    setState(() {
-      switch (item) {
-        case 1:
-          graficoReceitasAnuais =
-              Graficos.graficoDeBarrasReceita(listaReceitas);
-          break;
-        case 2:
-          graficoReceitasAnuais =
-              Graficos.graficoDeColunasReceita(listaReceitas);
-          break;
-        case 3:
-          graficoReceitasAnuais = Graficos.graficoDePizzaReceita(listaReceitas);
-          break;
-        case 4:
-          graficoReceitasAnuais = Graficos.graficoDePizzaReceita(listaReceitas);
-          break;
-      }
-    });
+  
+  buscarReceitas(String query) async {
+    final response = await http
+        .get(Utils.API + 'receita/municipio/' + query);
+    if (response.statusCode == 200) {
+      List<dynamic> dados = jsonDecode(response.body);
+      List<dynamic> receitas = dados[0]['receitas'];
+      receitas.forEach((receita){
+        listaReceitas.add(new Receita(int.parse(query), receita['ano'], receita['valor'],
+            null, null, Colors.green));
+      });
+      
+      calcularMediaReceitas();
+      setAnosReceita();
+
+      setState(() {
+        graficoReceitasAnuais = Graficos.graficoDeBarrasReceita(listaReceitas, this.codigo, this.nome, context);
+      });
+    } else {
+      print('Failed to load post');
+    }
   }
 
+  buscarDespesas(String query) async {
+    final response = await http
+        .get(Utils.API + 'despesa/municipio/' + query);
+    if (response.statusCode == 200) {
+      List<dynamic> dados = jsonDecode(response.body);
+
+      despesas = dados[0]['despesas'];
+      
+      despesas.forEach((despesa){
+        if(despesa['classificacao'] == 'Despesas Liquidadas'){
+          listaDespesas.add(new Despesa(int.parse(query), despesa['ano'], despesa['valor'],
+            null, null, Colors.red),);
+        }
+      });
+
+      calcularMediaDespesas();
+      setAnosDespesa();
+
+      setState(() {
+        graficoDespesasAnuais = Graficos.graficoDeBarrasDespesa(listaDespesas, this.codigo, this.nome, context);
+      });
+    } else {
+      print('Failed to load post');
+    }
+  }
+
+
+  
   void mudarGraficoDespesasAnuais(int item) {
     setState(() {
       switch (item) {
         case 1:
           graficoDespesasAnuais =
-              Graficos.graficoDeBarrasDespesa(listaDespesas);
+              Graficos.graficoDeBarrasDespesa(getListDespesas('Empenhadas'), this.codigo, this.nome, context);
+              this.tipoDespesas = "Valor Empenhado";
           break;
         case 2:
           graficoDespesasAnuais =
-              Graficos.graficoDeColunasDespesa(listaDespesas);
+              Graficos.graficoDeBarrasDespesa(getListDespesas('Liquidadas'), this.codigo, this.nome, context);
+              this.tipoDespesas = "Valor Liquidado";
           break;
         case 3:
-          // graficoDespesasAnuais = graficoDeLinhas();
+          graficoDespesasAnuais =
+            Graficos.graficoDeBarrasDespesa(getListDespesas('Pagas'), this.codigo, this.nome, context);
+              this.tipoDespesas = "Valor Pago";
           break;
         case 4:
-          graficoDespesasAnuais = Graficos.graficoDePizzaDespesa(listaDespesas);
+          graficoDespesasAnuais =
+            Graficos.graficoDeBarrasDespesa(getListDespesas('Restos a Pagar'), this.codigo, this.nome, context);
+              this.tipoDespesas = "Restos a Pagar";
           break;
       }
     });
@@ -378,23 +290,63 @@ class _TelaMunicipio extends State<TelaMunicipio> {
         ));
   }
 
-  Widget componenteMenuGrafico(int numGrafico) {
-    return Expanded(
-      flex: 2,
-      child: PopupMenuButton<int>(
+  List<Despesa> getListDespesas(String classificacao){
+
+    List<Despesa> list = new List<Despesa>();
+
+    if(classificacao == 'Empenhadas'){
+       despesas.forEach((despesa){
+        if(despesa['classificacao'] == 'Despesas Empenhadas'){
+          list.add(new Despesa(codigo, despesa['ano'], despesa['valor'],
+            'Despesas Empenhadas', null, Colors.red),);
+        }
+      });
+    }
+
+    if(classificacao == "Liquidadas"){
+       despesas.forEach((despesa){
+        if(despesa['classificacao'] == 'Despesas Liquidadas'){
+          list.add(new Despesa(codigo, despesa['ano'], despesa['valor'],
+            'Despesas Liquidadas', null, Colors.red),);
+        }
+      });
+    }
+
+    if(classificacao == "Pagas"){
+       despesas.forEach((despesa){
+        if(despesa['classificacao'] == 'Despesas Pagas'){
+          list.add(new Despesa(codigo, despesa['ano'], despesa['valor'],
+            'Despesas Pagas', null, Colors.red),);
+        }
+      });
+    }
+
+    if(classificacao == "Restos a Pagar"){
+       despesas.forEach((despesa){
+        if(despesa['classificacao'] == 'Inscrição de Restos a Pagar Não Processados'){
+          list.add(new Despesa(codigo, despesa['ano'], despesa['valor'],
+            'Inscrição de Restos a Pagar Não Processados', null, Colors.red),);
+        }
+      });
+    }
+
+    return list;
+  }
+
+  Widget componenteMenuGrafico() {
+    return PopupMenuButton<int>(
         icon: new Icon(
           Icons.tune,
           color: Colors.black45,
           size: 30,
+          
         ),
-        onSelected: (item) => numGrafico == 1
-            ? mudarGraficoReceitasAnuais(item)
-            : mudarGraficoDespesasAnuais(item),
+        onSelected: (item) => mudarGraficoDespesasAnuais(item),
         itemBuilder: (context) => [
           PopupMenuItem(
             value: 1,
             child: Text(
-              "Gráfico de Barras",
+              "Despesas Empenhadas",
               style: TextStyle(
                   fontFamily: 'Poppins', fontSize: 15, color: Colors.black87),
             ),
@@ -402,7 +354,7 @@ class _TelaMunicipio extends State<TelaMunicipio> {
           PopupMenuItem(
             value: 2,
             child: Text(
-              "Gráfico de Colunas",
+              "Despesas Liquidadas",
               style: TextStyle(
                   fontFamily: 'Poppins', fontSize: 15, color: Colors.black87),
             ),
@@ -410,7 +362,7 @@ class _TelaMunicipio extends State<TelaMunicipio> {
           PopupMenuItem(
             value: 3,
             child: Text(
-              "Gráfico de Linhas",
+              "Despesas Pagas",
               style: TextStyle(
                   fontFamily: 'Poppins', fontSize: 15, color: Colors.black87),
             ),
@@ -418,244 +370,45 @@ class _TelaMunicipio extends State<TelaMunicipio> {
           PopupMenuItem(
             value: 4,
             child: Text(
-              "Gráfico Pizza",
+              "Restos a Pagar",
               style: TextStyle(
                   fontFamily: 'Poppins', fontSize: 15, color: Colors.black87),
             ),
           ),
         ],
-      ),
     );
   }
 
-  // Widget graficoDeBarras(List<charts.Series<OrdinalSales, String>> dados){
-  //   return new charts.BarChart(
-  //     dados,
-  //     animate: true,
-  //     animationDuration: Duration(seconds: 1),
 
-  //     vertical: false,
-  //     barRendererDecorator: new charts.BarLabelDecorator<String>(),
-  //     domainAxis: new charts.OrdinalAxisSpec(
-  //         renderSpec: new charts.SmallTickRendererSpec(
-  //             minimumPaddingBetweenLabelsPx: 0,
-  //             labelStyle: new charts.TextStyleSpec(
-  //                 fontFamily: 'Poppins',
-  //                 fontSize: 12, // size in Pts.
-  //                 color: charts.MaterialPalette.black),
+  void calcularMediaReceitas(){
+    double total = 0.0;
+    listaReceitas.forEach((receita){
+      total += receita.valor;
+    });
+    setState(() {
+      receitaMedia = total/listaReceitas.length;
+    });
+    
+  }
 
-  //             lineStyle: new charts.LineStyleSpec(
-  //                 color: charts.MaterialPalette.black))
-  //     ),
-  //     primaryMeasureAxis: new charts.NumericAxisSpec(
-  //         renderSpec: new charts.GridlineRendererSpec(
+  void calcularMediaDespesas(){
+    double total = 0.0;
+    listaDespesas.forEach((despesa){
+      total += despesa.valor;
+    });
+    setState(() {
+      despesaMedia = total/listaDespesas.length;
+    });
+    
+  }
 
-  //             // Tick and Label styling here.
-  //             labelStyle: new charts.TextStyleSpec(
-  //                 fontFamily: 'Poppins',
-  //                 fontSize: 12, // size in Pts.
-  //                 color: charts.MaterialPalette.black),
+  void setAnosReceita(){
+    anoInicialReceita = listaReceitas[0].ano;
+    anoFinalReceita = listaReceitas[listaReceitas.length-1].ano;
+  }
 
-  //             // Change the line colors to match text color.
-  //             lineStyle: new charts.LineStyleSpec(
-  //                 color: charts.MaterialPalette.black))),
-
-  //   );
-  // }
-
-  // Widget graficoDePizza(List<charts.Series<OrdinalSales, String>> dados){
-  //   return new charts.PieChart(
-  //     dados,
-  //     animate: true,
-
-  //     animationDuration: Duration(seconds: 1),
-
-  //     behaviors: [
-  //       new charts.DatumLegend(
-  //         position: charts.BehaviorPosition.end,
-  //         horizontalFirst: false,
-  //         entryTextStyle: charts.TextStyleSpec(
-  //           fontFamily: 'Poppins',
-  //           fontSize: 12, // size in Pts.
-  //           color: charts.MaterialPalette.black
-  //         ),
-  //         cellPadding: new EdgeInsets.only(right: 4.0, bottom: 4.0),
-  //         showMeasures: true,
-  //         legendDefaultMeasure: charts.LegendDefaultMeasure.firstValue,
-  //         measureFormatter: (num value) {
-  //           return value == null ? '-' : ' - ${value}k';
-  //         },
-
-  //       ),
-  //     ],
-  //   );
-  // }
-
-  // Widget graficoDeLinhas(){
-  //   return new charts.LineChart(
-  //     _dadosLinear(),
-  //     animate: true,
-  //     domainAxis: new charts.NumericAxisSpec(
-  //         // Set the initial viewport by providing a new AxisSpec with the
-  //         // desired viewport, in NumericExtents.
-  //         viewport: new charts.NumericExtents(2014.0, 2017.0)),
-
-  //     // Optionally add a pan or pan and zoom behavior.
-  //     // If pan/zoom is not added, the viewport specified remains the viewport.
-  //     behaviors: [new charts.PanAndZoomBehavior()],
-  //   );
-
-  // }
-
-  // Widget graficoColunasReceita_Despesa(){
-
-  //    return new charts.BarChart(
-  //     _dadosTesteReceita_Despesa(listaReceitas, listaDespesas),
-  //     animate: true,
-  //     animationDuration: new Duration(seconds: 1),
-  //     barGroupingType: charts.BarGroupingType.grouped,
-  //     domainAxis: new charts.OrdinalAxisSpec(
-  //         renderSpec: new charts.SmallTickRendererSpec(
-  //             minimumPaddingBetweenLabelsPx: 0,
-  //             labelStyle: new charts.TextStyleSpec(
-  //                 fontFamily: 'Poppins',
-  //                 fontSize: 12, // size in Pts.
-  //                 color: charts.MaterialPalette.black),
-
-  //             lineStyle: new charts.LineStyleSpec(
-  //                 color: charts.MaterialPalette.black))
-  //     ),
-  //     primaryMeasureAxis: new charts.NumericAxisSpec(
-  //         renderSpec: new charts.GridlineRendererSpec(
-
-  //             // Tick and Label styling here.
-  //             labelStyle: new charts.TextStyleSpec(
-  //                 fontFamily: 'Poppins',
-  //                 fontSize: 12, // size in Pts.
-  //                 color: charts.MaterialPalette.black),
-
-  //             // Change the line colors to match text color.
-  //             lineStyle: new charts.LineStyleSpec(
-  //                 color: charts.MaterialPalette.black))),
-  //     behaviors: [
-  //       new charts.SeriesLegend(
-  //         entryTextStyle: charts.TextStyleSpec(
-  //           fontFamily: 'Poppins',
-  //           fontSize: 12, // size in Pts.
-  //           color: charts.MaterialPalette.black
-  //         ),
-  //         defaultHiddenSeries: ['Other'],
-  //       )
-  //     ],
-  //   );
-  // }
-
-  // static List<charts.Series<OrdinalSales, String>> _dadosTesteReceita(List<OrdinalSales> lista) {
-
-  //   return [
-  //     new charts.Series<OrdinalSales, String>(
-  //         id: 'Sales',
-  //         domainFn: (OrdinalSales sales, _) => sales.year,
-  //         measureFn: (OrdinalSales sales, _) => sales.sales,
-  //         data: lista,
-  //         insideLabelStyleAccessorFn: (OrdinalSales sales, _) => charts.TextStyleSpec(
-  //           fontFamily: 'Poppins',
-  //                 fontSize: 12, // size in Pts.
-  //                 color: charts.MaterialPalette.white
-  //         ),
-  //         colorFn: (OrdinalSales sales, _) =>
-  //           charts.ColorUtil.fromDartColor(sales.color),
-  //         // Set a label accessor to control the text of the bar label.
-  //         labelAccessorFn: (OrdinalSales sales, _) =>
-  //             'R\$ ${sales.sales.toString()}')
-  //   ];
-  // }
-
-  // static List<charts.Series<OrdinalSales, String>> _dadosTesteDespesa() {
-  //   final data = [
-  //     new OrdinalSales('2014', 255, Colors.red),
-  //     new OrdinalSales('2015', 274, Colors.blue),
-  //     new OrdinalSales('2016', 258, Colors.indigo),
-  //     new OrdinalSales('2017', 273, Colors.green),
-  //   ];
-
-  //   return [
-  //     new charts.Series<OrdinalSales, String>(
-  //         id: 'Sales',
-  //         domainFn: (OrdinalSales sales, _) => sales.year,
-  //         measureFn: (OrdinalSales sales, _) => sales.sales,
-  //         data: data,
-  //         colorFn: (OrdinalSales sales, _) =>
-  //           charts.ColorUtil.fromDartColor(sales.color),
-  //         // Set a label accessor to control the text of the bar label.
-  //         labelAccessorFn: (OrdinalSales sales, _) =>
-  //             '${sales.year}: \$${sales.sales.toString()}')
-  //   ];
-  // }
-
-  // static List<charts.Series<LinearSales, int>> _dadosLinear() {
-
-  //   final data = [
-  //     new LinearSales(2014, 5),
-  //     new LinearSales(2015, 25),
-  //     new LinearSales(2016, 100),
-  //     new LinearSales(2017, 75),
-  //   ];
-
-  //   return [
-  //     new charts.Series<LinearSales, int>(
-  //       id: 'Sales',
-  //       colorFn: (_, __) => charts.MaterialPalette.blue.shadeDefault,
-  //       domainFn: (LinearSales sales, _) => sales.year,
-  //       measureFn: (LinearSales sales, _) => sales.sales,
-  //       data: data,
-  //     )
-  //   ];
-
-  // }
-
-  // static List<charts.Series<OrdinalSales, String>> _dadosTesteReceita_Despesa(List<OrdinalSales> receitasList, List<OrdinalSales> despesasList) {
-
-  //   return [
-  //     new charts.Series<OrdinalSales, String>(
-  //       id: 'Receitas',
-  //       domainFn: (OrdinalSales sales, _) => sales.year,
-  //       measureFn: (OrdinalSales sales, _) => sales.sales,
-  //        colorFn: (OrdinalSales sales, _) =>
-  //           charts.ColorUtil.fromDartColor(Colors.green),
-  //       data: receitasList,
-  //     ),
-  //     new charts.Series<OrdinalSales, String>(
-  //       id: 'Despesas',
-  //       domainFn: (OrdinalSales sales, _) => sales.year,
-  //        colorFn: (OrdinalSales sales, _) =>
-  //           charts.ColorUtil.fromDartColor(Colors.red),
-  //       measureFn: (OrdinalSales sales, _) => sales.sales,
-  //       data: despesasList,
-  //     )
-  //   ];
-  // }
-
-  // }
-
+  void setAnosDespesa(){
+    anoInicialDespesa = listaDespesas[0].ano;
+    anoFinalDespesa = listaDespesas[listaDespesas.length-1].ano;
+  }
 }
-
-// class OrdinalSales {
-//   final String year;
-//   final double sales;
-//   final Color color;
-
-//   OrdinalSales(this.year, this.sales, this.color);
-// }
-
-// class LinearSales {
-//   final int year;
-//   final int sales;
-
-//   LinearSales(this.year, this.sales);
-// }
-
-// class Sales{
-//   String ano, valor;
-//   Sales(this.ano, this.valor);
-// }

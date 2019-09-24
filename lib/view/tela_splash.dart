@@ -56,7 +56,7 @@ class _TelaSplash extends State<TelaSplash>{
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      Image.asset('assets/images/logo.png', width: 200.0, height: 200.0),
+                      Image.asset('assets/images/logo1.png', width: 100.0, height: 100.0),
                   
                        new Container(
                         // elevation: 0,

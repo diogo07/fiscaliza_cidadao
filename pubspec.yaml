@@ -31,6 +31,8 @@ dependencies:
   syncfusion_flutter_charts: ^1.0.0-beta.3
   connectivity: ^0.4.3+7
   intl: ^0.15.8
+  flutter_swiper: ^1.1.6
+  toast: ^0.1.5
 
 dev_dependencies:
   flutter_test:
@@ -70,6 +72,9 @@ flutter:
     - family: Lobster
       fonts:
         - asset: fonts/Lobster-Regular.ttf
+    - family: Roboto
+      fonts:
+        - asset: fonts/Roboto-Regular.ttf
   assets:
     - assets/images/
 

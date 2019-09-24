@@ -1,18 +1,35 @@
+
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
-class Receita{
-  int ano, codigo;
+class ClassificacaoReceitaMoeda{
+  int ano;
   double valor;
-  String classificacao, funcao;
+  String tipo;
   Color cor;
 
-  Receita(this.codigo, this.ano, this.valor, this.classificacao, this.funcao, this.cor);
- 
- 
-  String formatMoeda(){
-    final format = new NumberFormat("#,##0.00", "en_US");
-    return format.format(valor);
+  ClassificacaoReceitaMoeda(this.ano, this.valor, this.tipo, this.cor);
+
+  double valorEmMilhoes(){
+    NumberFormat formatter = NumberFormat("0.00");
+    return valor/1000000;
+  }
+
+  double valorEmMilhares(){
+    NumberFormat formatter = NumberFormat("0.00");
+    return valor/1000;
+  }
+
+  String valorEmMilhoesString(){
+    NumberFormat formatter = NumberFormat("0.00");
+    double valorEmMilhoes = valor/1000000;
+    return formatter.format(valorEmMilhoes);
+  }
+
+  String valorEmMilharesString(){
+    NumberFormat formatter = NumberFormat("0.00");
+    double valorEmMilhoes = valor/1000;
+    return formatter.format(valorEmMilhoes);
   }
 
   String valorEmString(){
@@ -33,7 +50,7 @@ class Receita{
     
   }
 
-  double valorFormatado(){
+   double valorFormatado(){
 
     if(valor > 1000000000.0){
       return valor/1000000000;
@@ -47,14 +64,14 @@ class Receita{
     
   }
 
-  double valorEmMilhoes(){
-    return valor / 1000000;
-  }
-
-  String valorEmMilhoesString(){
-    NumberFormat formatter = NumberFormat("0.00");
-    double valorEmMilhoes = valor / 1000000;
-    return formatter.format(valorEmMilhoes);
+    String getTipo(){
+    if(tipo == 'Receitas Correntes' || tipo == 'Receitas de Capital'){
+      return tipo;
+    }else if(tipo == 'Receitas Correntes - Intraorçamentárias'){
+      return 'R. Cor. Intraorçamentárias';
+    }else{
+      return 'R. Cap. Intraorçamentárias';
+    }
   }
 
 }
