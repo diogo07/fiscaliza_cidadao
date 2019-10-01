@@ -67,13 +67,16 @@ class _TelaDespesaMunicipio extends State<TelaDespesaMunicipio> {
                 children: <Widget>[
                   new Padding(
                     padding: new EdgeInsets.only(top: 40),
-                    child: new Text(
-                      classificacaoDespesas(despesa.classificacao)+': R\$ ' + despesa.valorEmString(),
-                      style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 15,
-                          color: Colors.black87),
-                    ),
+                    child: FittedBox(
+                      fit:BoxFit.fitWidth,                    
+                      child:new Text(
+                        classificacaoDespesas(despesa.classificacao)+': R\$ ' + despesa.valorEmString(),
+                        style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 15,
+                            color: Colors.black87),
+                      ),
+                    )
                   )
                 ],
               ),
@@ -82,7 +85,7 @@ class _TelaDespesaMunicipio extends State<TelaDespesaMunicipio> {
                   children: <Widget>[
                     new SizedBox(
                         width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height * 0.9,
+                        height: MediaQuery.of(context).orientation == Orientation.portrait ? MediaQuery.of(context).size.height * 1.2 : MediaQuery.of(context).size.height * 1.9,
                         child: new Padding(
                             padding: new EdgeInsets.all(20),
                             child: graficoDespesasLiquidadas))
@@ -96,7 +99,7 @@ class _TelaDespesaMunicipio extends State<TelaDespesaMunicipio> {
 
   buscarDespesas(String codigo, String ano) async {
     final response = await http
-        .get(Utils.API + 'despesa/funcao/municipio/' + codigo + '/ano/' + ano);
+        .get(Utils.api + 'despesa/funcao/municipio/' + codigo + '/ano/' + ano);
     if (response.statusCode == 200) {
       List<dynamic> dados = jsonDecode(response.body);
 
@@ -281,7 +284,10 @@ class _TelaDespesaMunicipio extends State<TelaDespesaMunicipio> {
       animate: true,
       animationDuration: Duration(seconds: 1),
       vertical: false,
-      barRendererDecorator: new charts.BarLabelDecorator<String>(),
+      defaultRenderer: new charts.BarRendererConfig(
+          cornerStrategy: const charts.ConstCornerStrategy(30),
+          barRendererDecorator: new charts.BarLabelDecorator<String>(),      
+      ),
       domainAxis: new charts.OrdinalAxisSpec(
           renderSpec: new charts.SmallTickRendererSpec(
               minimumPaddingBetweenLabelsPx: 0,
@@ -310,7 +316,10 @@ class _TelaDespesaMunicipio extends State<TelaDespesaMunicipio> {
       animate: true,
       animationDuration: Duration(seconds: 1),
       vertical: false,
-      barRendererDecorator: new charts.BarLabelDecorator<String>(),
+      defaultRenderer: new charts.BarRendererConfig(
+          cornerStrategy: const charts.ConstCornerStrategy(30),
+          barRendererDecorator: new charts.BarLabelDecorator<String>(),      
+      ),
       domainAxis: new charts.OrdinalAxisSpec(
           renderSpec: new charts.SmallTickRendererSpec(
               minimumPaddingBetweenLabelsPx: 0,
@@ -333,6 +342,8 @@ class _TelaDespesaMunicipio extends State<TelaDespesaMunicipio> {
   }
 
   String classificacaoDespesas(String tipo) {
+      print(tipo);
+
       if(tipo == 'Despesas Empenhadas'){
         return "Valor Total Empenhado";
       }
@@ -355,19 +366,13 @@ class _TelaDespesaMunicipio extends State<TelaDespesaMunicipio> {
       Colors.red,
       Colors.blue,
       Colors.green,
-      Colors.cyan,
-      Colors.blueAccent,
       Colors.purple,
       Colors.grey,
       Colors.indigo,
       Colors.orange,
       Colors.orangeAccent,
-      Colors.amber,
-      Colors.amberAccent,
-      Colors.lime,
       Colors.pink,
       Colors.teal,
-      Colors.tealAccent
     ];
 
     list.shuffle();

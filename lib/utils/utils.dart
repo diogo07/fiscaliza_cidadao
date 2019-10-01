@@ -1,9 +1,8 @@
-
 import 'package:intl/intl.dart';
 
 class Utils{
 
-  static final API = "http://op.repsys.com.br/api/"; 
+  static final api = "http://op.repsys.com.br/api/"; 
 
   static String removerCaracteresEspeciais(String query){
     query = query.toLowerCase();
@@ -40,5 +39,6 @@ class Utils{
     }
     
   }
+
 
 }

@@ -17,7 +17,7 @@ class GradientAppBar extends StatelessWidget {
 
     return new Container(
       padding: new EdgeInsets.only(top: statusBarHeight),
-      height: statusBarHeight + barHeight,
+      height: MediaQuery.of(context).orientation == Orientation.portrait ? statusBarHeight + barHeight: statusBarHeight + 70,
       decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage("assets/images/background.jpg"),
@@ -26,7 +26,6 @@ class GradientAppBar extends StatelessWidget {
       ),
       child: new Center(
         child: Row(
-          // mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             
             new Expanded(
@@ -106,19 +105,7 @@ class GradientAppBarBack extends StatelessWidget {
                 image: AssetImage("assets/images/background.jpg"),
                 fit: BoxFit.cover,
               ),
-      ),
-      // decoration: new BoxDecoration(
-      //   gradient: new LinearGradient(
-      //     colors: [
-      //       const Color.fromRGBO(26,19,133,1),
-      //       const Color.fromRGBO(13,159,189,1)
-      //     ],
-      //     begin: const FractionalOffset(0.0, 0.9),
-      //     end: const FractionalOffset(0.8, 1.0),
-      //     stops: [0.0, 0.99],
-      //     tileMode: TileMode.clamp
-      //   ),
-      // ),
+      ),  
       child: new Center(
         child: Row(
           // mainAxisAlignment: MainAxisAlignment.center,

@@ -33,7 +33,7 @@ class TelaHome extends StatelessWidget{
                   children: <Widget>[
                     componentCard(context, "\nMunicípios", TelaPesquisaMunicipios(), Icons.search),
                     componentCard(context, "\nRankings", TelaRankings(), Icons.insert_chart),
-                    componentCard(context, "\nComparações", TelaConsultasPersonalizas(), Icons.settings),
+                    componentCard(context, "\nComparações", TelaConsultasPersonalizas(), Icons.compare),
                                     
                   ],  
                 ),

@@ -23,14 +23,14 @@ class _TelaConsultasPersonalizas extends State<TelaConsultasPersonalizas> {
   bool campoPrimeiroMunicipio;
   int campoAtual;
 
+
+ 
+
   @override
   void initState() {
-    _focusNode.addListener(() {
-      if (!_focusNode.hasFocus) {
-        print('foco node');
-      }
-    });
+  
     editingControllerPrimeiroMunicipio = TextEditingController();
+    editingControllerPrimeiroMunicipio.addListener(verificarAlteracoesCampoPrimeiroMunicipio);
     editingControllerSegundoMunicipio = TextEditingController();
     campoPrimeiroMunicipio = true;
     super.initState();
@@ -46,10 +46,10 @@ class _TelaConsultasPersonalizas extends State<TelaConsultasPersonalizas> {
               padding:
                   EdgeInsets.only(top: 20, bottom: 40, left: 40, right: 40),
               child: Text(
-                '\t\t\t\t\t\tVocê pode selecionar dois municípios e comparar arrecadações e gastos que cada um obteve anualmente. Para fazer isso, digite o nome do primeiro município e toque em pesquisa, depois selecione o município desejado.',
+                '\t\t\t\t\t\tVocê pode selecionar dois municípios e comparar arrecadações e gastos que cada um obteve anualmente. Para fazer isso, digite o nome do primeiro município e toque em buscar, depois selecione o município desejado. Repita os passos para selecionar o segundo município.',
                 textAlign: TextAlign.justify,
                 style: TextStyle(
-                    fontFamily: 'Poppins', fontSize: 14, color: Colors.black87),
+                    fontFamily: 'Poppins-Regular', fontSize: 15, color: Colors.black87),
               ),
             ),
 
@@ -62,10 +62,21 @@ class _TelaConsultasPersonalizas extends State<TelaConsultasPersonalizas> {
                     new Expanded(
                       child: TextField(
                         controller: editingControllerPrimeiroMunicipio,
+                        focusNode: _focusNode,
                         decoration: new InputDecoration(
-                          enabled: campoPrimeiroMunicipio,
                           labelText: "Nome do primeiro município",
                           prefixIcon: Icon(Icons.search),
+                          suffixIcon: IconButton(
+                            icon: Icon(Icons.close),
+                            onPressed: (){
+                              setState(() {
+                               WidgetsBinding.instance.addPostFrameCallback((_) => editingControllerPrimeiroMunicipio.clear());
+                               WidgetsBinding.instance.addPostFrameCallback((_) => editingControllerSegundoMunicipio.clear());
+                               municipios.clear();
+                               campoPrimeiroMunicipio = true;
+                              });
+                            }
+                          ),
                           fillColor: Colors.white,
                           border: new OutlineInputBorder(
                             borderRadius: new BorderRadius.circular(30.0),
@@ -93,6 +104,15 @@ class _TelaConsultasPersonalizas extends State<TelaConsultasPersonalizas> {
                               decoration: new InputDecoration(
                                 labelText: "Nome do segundo município",
                                 prefixIcon: Icon(Icons.search),
+                                suffixIcon: IconButton(
+                                  icon: Icon(Icons.close),
+                                  onPressed: (){
+                                    setState(() {
+                                      municipios.clear();
+                                      WidgetsBinding.instance.addPostFrameCallback((_) => editingControllerSegundoMunicipio.clear());                                    
+                                    });
+                                  }
+                                ),
                                 fillColor: Colors.white,
                                 border: new OutlineInputBorder(
                                   borderRadius: new BorderRadius.circular(30.0),
@@ -163,143 +183,18 @@ class _TelaConsultasPersonalizas extends State<TelaConsultasPersonalizas> {
               ),
             ),
 
-
-
-              // Container(
-              //   height: 100,
-              //   child: ListView.builder(
-              //     shrinkWrap: true,
-              //     physics: ClampingScrollPhysics(),
-              //     itemBuilder: (_, i) => ListTile(title: Text("Item ${i}"))),
-              // )
             ]
           )
-          // )
-      // GradientAppBarBack("Comparações"),
-      // Expanded(
-      //     child: Center(
-      //   child: Column(
-      //     children: <Widget>[
-      //       Padding(
-      //         padding:
-      //             EdgeInsets.only(top: 20, bottom: 40, left: 40, right: 40),
-      //         child: Text(
-      //           '\t\t\t\t\t\tVocê pode selecionar dois municípios e comparar arrecadações e gastos que cada um obteve anualmente. Para fazer isso, digite o nome do primeiro município e toque em pesquisa, depois selecione o município desejado.',
-      //           textAlign: TextAlign.justify,
-      //           style: TextStyle(
-      //               fontFamily: 'Poppins', fontSize: 14, color: Colors.black87),
-      //         ),
-      //       ),
-      //       new Container(
-      //         margin: new EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-      //         padding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
-      //         child: new Column(
-      //           children: <Widget>[
-      //             new Row(children: <Widget>[
-      //               new Expanded(
-      //                 child: TextField(
-      //                   controller: editingControllerPrimeiroMunicipio,
-      //                   decoration: new InputDecoration(
-      //                     enabled: campoPrimeiroMunicipio,
-      //                     labelText: "Nome do primeiro município",
-      //                     prefixIcon: Icon(Icons.search),
-      //                     fillColor: Colors.white,
-      //                     border: new OutlineInputBorder(
-      //                       borderRadius: new BorderRadius.circular(30.0),
-      //                       borderSide: new BorderSide(),
-      //                     ),
-      //                   ),
-      //                   keyboardType: TextInputType.text,
-      //                   style: new TextStyle(
-      //                     fontFamily: "Poppins",
-      //                     fontSize: 14,
-      //                   ),
-      //                 ),
-      //               ),
-      //             ]),
-      //             campoPrimeiroMunicipio
-      //                 ? Container()
-      //                 : new Row(children: <Widget>[
-      //                     Container(
-      //                       margin: const EdgeInsets.only(top: 30.0),
-      //                       padding: EdgeInsets.only(top: 20, bottom: 30),
-      //                     ),
-      //                     Expanded(
-      //                       child: TextField(
-      //                         controller: editingControllerSegundoMunicipio,
-      //                         decoration: new InputDecoration(
-      //                           labelText: "Nome do segundo município",
-      //                           prefixIcon: Icon(Icons.search),
-      //                           fillColor: Colors.white,
-      //                           border: new OutlineInputBorder(
-      //                             borderRadius: new BorderRadius.circular(30.0),
-      //                             borderSide: new BorderSide(),
-      //                           ),
-      //                         ),
-      //                         keyboardType: TextInputType.text,
-      //                         style: new TextStyle(
-      //                           fontFamily: "Poppins",
-      //                           fontSize: 14,
-      //                         ),
-      //                       ),
-      //                     ),
-      //                   ]),
-      //             new Row(
-      //                 mainAxisAlignment: MainAxisAlignment.end,
-      //                 children: <Widget>[
-      //                   new Expanded(
-      //                       child: new Container(
-      //                           margin: const EdgeInsets.only(top: 10.0),
-      //                           child: new RaisedButton(
-      //                             padding: EdgeInsets.all(10.0),
-      //                             child: const Text(
-      //                               'Buscar',
-      //                               style: TextStyle(
-      //                                 color: Colors.white,
-      //                                 fontFamily: "Poppins",
-      //                                 fontSize: 14,
-      //                               ),
-      //                             ),
-      //                             shape: RoundedRectangleBorder(
-      //                                 borderRadius:
-      //                                     BorderRadius.circular(30.0)),
-      //                             color: Colors.blue[300],
-      //                             elevation: 4.0,
-      //                             splashColor: Colors.blueGrey,
-      //                             onPressed: () {
-      //                               buscarMunicipios();
-      //                             },
-      //                           ))),
-      //                 ])
-      //           ],
-      //         ),
-      //       ),
-      //       buscandoMunicipios
-      //           ? new Row(
-      //               mainAxisAlignment: MainAxisAlignment.center,
-      //               crossAxisAlignment: CrossAxisAlignment.center,
-      //               children: <Widget>[
-      //                 new Container(
-      //                   padding: new EdgeInsets.only(top: 10),
-      //                   child: new CircularProgressIndicator(),
-      //                 )
-      //               ],
-      //             )
-      //           : new Container(),
-      //       Expanded(
-      //         child: ListView.builder(
-      //           shrinkWrap: true,
-      //           itemCount: municipios.length,
-      //           itemBuilder: (context, index) {
-      //             var municipio = municipios[index];
-      //             return criarCard(municipio);
-      //           },
-      //         ),
-      //       ),
-        //   ],
-        // ),
       )
     ;
+  }
+
+  void verificarAlteracoesCampoPrimeiroMunicipio(){
+    if(_focusNode.hasFocus){
+      setState(() {
+       campoPrimeiroMunicipio = true; 
+      });
+    }
   }
 
   Card criarCard(Municipio municipio) => Card(
@@ -426,7 +321,7 @@ class _TelaConsultasPersonalizas extends State<TelaConsultasPersonalizas> {
     var connectivityResult = await (Connectivity().checkConnectivity());
     if ((connectivityResult == ConnectivityResult.mobile) ||
         (connectivityResult == ConnectivityResult.wifi)) {
-      final response = await http.get(Utils.API + 'municipio/' + query + '/');
+      final response = await http.get(Utils.api + 'municipio/' + query + '/');
       if (response.statusCode == 200) {
         List<dynamic> dados = jsonDecode(response.body);
         List<Municipio> listaMunicipios = new List<Municipio>();

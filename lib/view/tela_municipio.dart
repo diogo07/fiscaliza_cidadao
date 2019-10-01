@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:fiscaliza_cidadao/model/despesa.dart';
 import 'package:fiscaliza_cidadao/model/receita.dart';
 import 'package:fiscaliza_cidadao/utils/utils.dart';
@@ -8,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+import 'package:toast/toast.dart';
 
 class TelaMunicipio extends StatefulWidget {
   int codigo;
@@ -46,7 +49,7 @@ class _TelaMunicipio extends State<TelaMunicipio> {
     anoFinalReceita = 2018;
     anoInicialDespesa = 2014;
     anoFinalDespesa = 2018;
-    tipoDespesas = 'Valor Empenhado';
+    tipoDespesas = 'Valor Liquidado';
     graficoReceitasAnuais = new Container(width: 10, height: 10);
     listaReceitas = new List<Receita>();
     listaDespesas = new List<Despesa>();
@@ -81,7 +84,7 @@ class _TelaMunicipio extends State<TelaMunicipio> {
                     '\t\t\t\t\t\tOlá, você sabia que o município de '+nome+' arrecadou, em média, '+Utils.valorEmString(receitaMedia)+' por ano entre '+anoInicialReceita.toString()+' e '+anoFinalReceita.toString()+'. No gráfico apresentado a seguir, você pode verificar o valor arrecadado em cada ano.',
                     textAlign: TextAlign.justify,
                     style: TextStyle(
-                fontFamily: 'Poppins', fontSize: 14, color: Colors.black87),
+                fontFamily: 'Poppins-Regular', fontSize: 15, color: Colors.black87),
                   ),
                           
               ),
@@ -103,10 +106,10 @@ class _TelaMunicipio extends State<TelaMunicipio> {
                               top: 20, bottom: 40, left: 40, right: 40),
                           child:
                   Text(
-                    '\t\t\t\t\t\tPara saber mais informações sobre a forma como essa quantia foi arrecadada em cada ano, você pode tocar em uma das barras verdes do gráfico acima, de acordo com o ano que você deseja verificar.',
+                    '\t\t\t\t\t\tPara saber mais informações sobre a forma como esse valor foi arrecadado em cada ano, você pode tocar em uma das barras verdes do gráfico acima, de acordo com o ano que você deseja verificar.',
                     textAlign: TextAlign.justify,
                     style: TextStyle(
-                fontFamily: 'Poppins', fontSize: 14, color: Colors.black87),
+                fontFamily: 'Poppins-Regular', fontSize: 15, color: Colors.black87),
                   ),
                           
               ),
@@ -131,10 +134,24 @@ class _TelaMunicipio extends State<TelaMunicipio> {
                               top: 20, bottom: 20, left: 40, right: 40),
                           child:
                   Text(
-                    '\t\t\t\t\t\tA média de despesas anuais do município de '+nome+', entre '+anoInicialDespesa.toString()+' e '+anoFinalDespesa.toString()+', é de '+Utils.valorEmString(despesaMedia)+'. O gráfico apresentado a seguir, expõe o valor de cada ano.',
+                    '\t\t\t\t\t\tA média de despesas anuais do município de '+nome+', entre '+anoInicialDespesa.toString()+' e '+anoFinalDespesa.toString()+', é de '+Utils.valorEmString(despesaMedia)+'. O gráfico apresentado a seguir, expõe o valor de cada ano, podendo elas serem classificadas entre Empenhadas, Liquidadas, Pagas e Restos a Pagar.',
                     textAlign: TextAlign.justify,
                     style: TextStyle(
-                fontFamily: 'Poppins', fontSize: 14, color: Colors.black87),
+                fontFamily: 'Poppins-Regular', fontSize: 15, color: Colors.black87),
+                  ),
+                          
+              ),
+
+
+              Padding(
+                          padding: EdgeInsets.only(
+                              top: 20, bottom: 20, left: 40, right: 40),
+                          child:
+                  Text(
+                    '\t\t\t\t\t\t'+getTextoTipoDespesa()+'.',
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(
+                fontFamily: 'Poppins-Regular', fontSize: 15, color: Colors.black87),
                   ),
                           
               ),
@@ -186,7 +203,7 @@ class _TelaMunicipio extends State<TelaMunicipio> {
                     '\t\t\t\t\t\tAo tocar em alguma das barras vermelhas acima, você pode verificar a forma como foi distribuida a despesa de cada ano.',
                     textAlign: TextAlign.justify,
                     style: TextStyle(
-                fontFamily: 'Poppins', fontSize: 14, color: Colors.black87),
+                fontFamily: 'Poppins-Regular', fontSize: 15, color: Colors.black87),
                   ),
                           
               ),
@@ -201,8 +218,10 @@ class _TelaMunicipio extends State<TelaMunicipio> {
 
   
   buscarReceitas(String query) async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if ((connectivityResult == ConnectivityResult.mobile) || (connectivityResult == ConnectivityResult.wifi)) {
     final response = await http
-        .get(Utils.API + 'receita/municipio/' + query);
+        .get(Utils.api + 'receita/municipio/' + query);
     if (response.statusCode == 200) {
       List<dynamic> dados = jsonDecode(response.body);
       List<dynamic> receitas = dados[0]['receitas'];
@@ -218,13 +237,18 @@ class _TelaMunicipio extends State<TelaMunicipio> {
         graficoReceitasAnuais = Graficos.graficoDeBarrasReceita(listaReceitas, this.codigo, this.nome, context);
       });
     } else {
-      print('Failed to load post');
+      Toast.show("Ocorreu um erro ao atualizar as informações, tente novamente!", context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM);
+    }
+    }else{
+      setState((){
+      });
+      Toast.show("Sem conexão com a internet!", context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM);
     }
   }
 
   buscarDespesas(String query) async {
     final response = await http
-        .get(Utils.API + 'despesa/municipio/' + query);
+        .get(Utils.api + 'despesa/municipio/' + query);
     if (response.statusCode == 200) {
       List<dynamic> dados = jsonDecode(response.body);
 
@@ -233,7 +257,7 @@ class _TelaMunicipio extends State<TelaMunicipio> {
       despesas.forEach((despesa){
         if(despesa['classificacao'] == 'Despesas Liquidadas'){
           listaDespesas.add(new Despesa(int.parse(query), despesa['ano'], despesa['valor'],
-            null, null, Colors.red),);
+            'Despesas Liquidadas', null, Colors.red),);
         }
       });
 
@@ -410,5 +434,17 @@ class _TelaMunicipio extends State<TelaMunicipio> {
   void setAnosDespesa(){
     anoInicialDespesa = listaDespesas[0].ano;
     anoFinalDespesa = listaDespesas[listaDespesas.length-1].ano;
+  }
+
+  String getTextoTipoDespesa(){
+    if(this.tipoDespesas == 'Valor Empenhado'){
+      return "As despesas empenhadas correspondem aos valores reservados para os gastos planejados pelo município.";
+    }else if(this.tipoDespesas == 'Valor Liquidado'){
+      return "As despesas liquidadas correspondem aos valores das despesas concretizadas pelo município.";
+    }else if(this.tipoDespesas == 'Valor Pago'){
+      return "As despesas pagas ocorrem quando o município de fato realiza o pagamento pelo serviço ou produto disponibilizado.";
+    }else{
+      return "Os restos a pagar correspondem as despesas liquidadas que o município não concretizou o pagamento dentro do ano planejado.";
+    }
   }
 }

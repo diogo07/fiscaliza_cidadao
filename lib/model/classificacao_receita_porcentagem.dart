@@ -15,12 +15,14 @@ class ClassificacaoReceitaPorcentagem{
   }
 
   String getTipo(){
-    if(tipo == 'Receitas Correntes' || tipo == 'Receitas de Capital'){
-      return tipo;
+    if(tipo == 'Receitas Correntes'){
+      return 'Cor.';
+    }else if(tipo == 'Receitas de Capital'){
+      return 'Cap.';
     }else if(tipo == 'Receitas Correntes - Intraorçamentárias'){
-      return 'R. Cor. Intraorçamentárias';
+      return 'Cor. Int.';
     }else{
-      return 'R. Cap. Intraorçamentárias';
+      return 'Cap. Int.';
     }
   }
 

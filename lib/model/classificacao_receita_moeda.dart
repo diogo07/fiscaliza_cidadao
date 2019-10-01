@@ -11,12 +11,10 @@ class ClassificacaoReceitaMoeda{
   ClassificacaoReceitaMoeda(this.ano, this.valor, this.tipo, this.cor);
 
   double valorEmMilhoes(){
-    NumberFormat formatter = NumberFormat("0.00");
     return valor/1000000;
   }
 
   double valorEmMilhares(){
-    NumberFormat formatter = NumberFormat("0.00");
     return valor/1000;
   }
 
@@ -64,13 +62,15 @@ class ClassificacaoReceitaMoeda{
     
   }
 
-    String getTipo(){
-    if(tipo == 'Receitas Correntes' || tipo == 'Receitas de Capital'){
-      return tipo;
+  String getTipo(){
+    if(tipo == 'Receitas Correntes'){
+      return 'Cor.';
+    }else if(tipo == 'Receitas de Capital'){
+      return 'Cap.';
     }else if(tipo == 'Receitas Correntes - Intraorçamentárias'){
-      return 'R. Cor. Intraorçamentárias';
+      return 'Cor. Int.';
     }else{
-      return 'R. Cap. Intraorçamentárias';
+      return 'Cap. Int.';
     }
   }
 

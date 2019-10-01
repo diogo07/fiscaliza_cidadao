@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:charts_flutter/flutter.dart' as charts;
+import 'package:fiscaliza_cidadao/controller/controller_tela_comparativo_municipios.dart';
 import 'package:fiscaliza_cidadao/model/despesa.dart';
 import 'package:fiscaliza_cidadao/model/receita.dart';
 import 'package:fiscaliza_cidadao/utils/utils.dart';
@@ -129,7 +130,7 @@ class _TelaComparativoMunicipios extends State<TelaComparativoMunicipios> {
 
   void buscarReceitasMunicipios() async {
     final response = await http.get(
-        Utils.API + 'receita/municipio/' + primeiroMunicipio.codigo.toString());
+        Utils.api + 'receita/municipio/' + primeiroMunicipio.codigo.toString());
     if (response.statusCode == 200) {
       List<dynamic> dadosPrimeiroMunicipio = jsonDecode(response.body);
       List<dynamic> listaPrimeiroMunicipio =
@@ -139,7 +140,7 @@ class _TelaComparativoMunicipios extends State<TelaComparativoMunicipios> {
             receita['ano'], receita['valor'], null, null, Colors.teal));
       });
 
-      final resposta = await http.get(Utils.API +
+      final resposta = await http.get(Utils.api +
           'receita/municipio/' +
           segundoMunicipio.codigo.toString());
       if (resposta.statusCode == 200) {
@@ -160,7 +161,7 @@ class _TelaComparativoMunicipios extends State<TelaComparativoMunicipios> {
 
   void buscarDespesasMunicipios() async {
     final response = await http.get(
-        Utils.API + 'despesa/municipio/' + primeiroMunicipio.codigo.toString());
+        Utils.api + 'despesa/municipio/' + primeiroMunicipio.codigo.toString());
     if (response.statusCode == 200) {
       List<dynamic> dadosPrimeiroMunicipio = jsonDecode(response.body);
       List<dynamic> listaPrimeiroMunicipio = dadosPrimeiroMunicipio[0]['despesas'];
@@ -170,7 +171,7 @@ class _TelaComparativoMunicipios extends State<TelaComparativoMunicipios> {
         }
       });
 
-      final resposta = await http.get(Utils.API +
+      final resposta = await http.get(Utils.api +
           'despesa/municipio/' +
           segundoMunicipio.codigo.toString());
       if (resposta.statusCode == 200) {
@@ -180,7 +181,7 @@ class _TelaComparativoMunicipios extends State<TelaComparativoMunicipios> {
         listaSegundoMunicipio.forEach((despesa) {
           if(despesa['classificacao'] == 'Despesas Liquidadas'){
             despesasSegundoMunicipio.add(new Despesa(segundoMunicipio.codigo,
-              despesa['ano'], despesa['valor'], null, null, Colors.grey));
+              despesa['ano'], despesa['valor'], null, null, Colors.indigo));
           }
         });
 
@@ -196,7 +197,39 @@ class _TelaComparativoMunicipios extends State<TelaComparativoMunicipios> {
       gerarSeriesReceita(),
       animate: true,
       animationDuration: Duration(seconds: 1),
+      defaultRenderer: new charts.BarRendererConfig(
+          cornerStrategy: const charts.ConstCornerStrategy(30),
+          // barRendererDecorator: new charts.BarLabelDecorator<String>(),      
+      ),
       barGroupingType: charts.BarGroupingType.grouped,
+      selectionModels: [
+        charts.SelectionModelConfig(
+          changedListener: (charts.SelectionModel model) {
+            if(model.hasDatumSelection){
+              int index = model.selectedDatum[0].index;
+              ControllerTelaComparativoMunicipios.abrirTelaComparativoReceitasMunicipios(context, primeiroMunicipio, segundoMunicipio, receitasPrimeiroMunicipio[index].ano);
+            }
+          }
+        )
+      ],
+      domainAxis: new charts.OrdinalAxisSpec(
+          renderSpec: new charts.SmallTickRendererSpec(
+              minimumPaddingBetweenLabelsPx: 0,
+              labelStyle: new charts.TextStyleSpec(
+                  fontFamily: 'Poppins',
+                  fontSize: 12, 
+                  color: charts.MaterialPalette.black),
+              lineStyle: new charts.LineStyleSpec(
+                  color: charts.MaterialPalette.black))
+      ),
+      primaryMeasureAxis: new charts.NumericAxisSpec(
+          renderSpec: new charts.GridlineRendererSpec(
+              labelStyle: new charts.TextStyleSpec(
+                  fontFamily: 'Poppins',
+                  fontSize: 12,
+                  color: charts.MaterialPalette.black),
+              lineStyle: new charts.LineStyleSpec(
+                  color: charts.MaterialPalette.black))), 
       behaviors: [
         new charts.SeriesLegend(
           defaultHiddenSeries: ['Other'],
@@ -214,7 +247,38 @@ class _TelaComparativoMunicipios extends State<TelaComparativoMunicipios> {
       gerarSeriesDespesa(),
       animate: true,
       animationDuration: Duration(seconds: 1),
+      defaultRenderer: new charts.BarRendererConfig(
+          cornerStrategy: const charts.ConstCornerStrategy(30), 
+      ),
       barGroupingType: charts.BarGroupingType.grouped,
+      selectionModels: [
+        charts.SelectionModelConfig(
+          changedListener: (charts.SelectionModel model) {
+            if(model.hasDatumSelection){
+              int index = model.selectedDatum[0].index;
+              ControllerTelaComparativoMunicipios.abrirTelaComparativoDespesasMunicipios(context, primeiroMunicipio, segundoMunicipio, despesasPrimeiroMunicipio[index].ano);
+            }
+          }
+        )
+      ],
+      domainAxis: new charts.OrdinalAxisSpec(
+          renderSpec: new charts.SmallTickRendererSpec(
+              minimumPaddingBetweenLabelsPx: 0,
+              labelStyle: new charts.TextStyleSpec(
+                  fontFamily: 'Poppins',
+                  fontSize: 12, 
+                  color: charts.MaterialPalette.black),
+              lineStyle: new charts.LineStyleSpec(
+                  color: charts.MaterialPalette.black))
+      ),
+      primaryMeasureAxis: new charts.NumericAxisSpec(
+          renderSpec: new charts.GridlineRendererSpec(
+              labelStyle: new charts.TextStyleSpec(
+                  fontFamily: 'Poppins',
+                  fontSize: 12,
+                  color: charts.MaterialPalette.black),
+              lineStyle: new charts.LineStyleSpec(
+                  color: charts.MaterialPalette.black))), 
       behaviors: [
         new charts.SeriesLegend(
           defaultHiddenSeries: ['Other'],

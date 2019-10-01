@@ -19,17 +19,16 @@ class Despesa{
 
     if(valor > 1000000000.0){
       double valorEmMilhoes = valor/1000000000;
-      return "R\$ "+formatter.format(valorEmMilhoes)+" bilhões".replaceAll('.', ',');
+      return "R\$ "+formatter.format(valorEmMilhoes).replaceAll('.', ',')+" bilhões";
     }else if(valor > 1000000.0){
       double valorEmMilhoes = valor/1000000;
-      return "R\$ "+formatter.format(valorEmMilhoes)+" milhões".replaceAll('.', ',');
+      return "R\$ "+formatter.format(valorEmMilhoes).replaceAll('.', ',')+" milhões";
     }else if(valor < 1000000.0 && valor > 1000.0){
       double valorEmMilhares = valor/1000;
-      return "R\$ "+formatter.format(valorEmMilhares)+" mil".replaceAll('.', ',');
+      return "R\$ "+formatter.format(valorEmMilhares).replaceAll('.', ',')+" mil";
     }else{
       return "R\$ "+formatter.format(valor).replaceAll('.', ',');
-    }
-    
+    }    
   }
 
    double valorFormatado(){
@@ -46,14 +45,5 @@ class Despesa{
     
   }
 
-  double valorEmMilhoes(){
-    return valor/1000000;
-  }
-
-  String valorEmMilhoesString(){
-    NumberFormat formatter = NumberFormat("0.00");
-    double valorEmMilhoes = valor/1000000;
-    return formatter.format(valorEmMilhoes);
-  }
 
 }

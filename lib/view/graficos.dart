@@ -28,7 +28,7 @@ class Graficos{
                   fontSize: 12, // size in Pts.
                   color: charts.MaterialPalette.black),
               labelAccessorFn: (Receita receita, _) =>
-                 'R\$ ${receita.valorEmString()}')
+                 receita.valorEmString())
     ];
   }
 
@@ -52,7 +52,7 @@ class Graficos{
                   fontSize: 12, // size in Pts.
                   color: charts.MaterialPalette.black),
               labelAccessorFn: (Despesa despesa, _) =>
-                  'R\$ ${despesa.valorEmString()}')
+                  despesa.valorEmString())
     ];
   }
 
@@ -62,7 +62,7 @@ class Graficos{
       animate: true,
       animationDuration: Duration(seconds: 1), 
       vertical: false,
-      barRendererDecorator: new charts.BarLabelDecorator<String>(),
+      // barRendererDecorator: new charts.BarLabelDecorator<String>(),      
       selectionModels: [
         charts.SelectionModelConfig(
           changedListener: (charts.SelectionModel model) {
@@ -98,6 +98,10 @@ class Graficos{
                   color: charts.MaterialPalette.black),
               lineStyle: new charts.LineStyleSpec(
                   color: charts.MaterialPalette.black))), 
+      defaultRenderer: new charts.BarRendererConfig(
+          cornerStrategy: const charts.ConstCornerStrategy(30),
+          barRendererDecorator: new charts.BarLabelDecorator<String>(),      
+      ),
     );
   }
 
@@ -158,7 +162,10 @@ class Graficos{
       animate: true,
       animationDuration: Duration(seconds: 1), 
       vertical: false,
-      barRendererDecorator: new charts.BarLabelDecorator<String>(),
+      defaultRenderer: new charts.BarRendererConfig(
+          cornerStrategy: const charts.ConstCornerStrategy(30),
+          barRendererDecorator: new charts.BarLabelDecorator<String>(),      
+      ),
       selectionModels: [
         charts.SelectionModelConfig(
           changedListener: (charts.SelectionModel model) {

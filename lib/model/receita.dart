@@ -8,12 +8,7 @@ class Receita{
   Color cor;
 
   Receita(this.codigo, this.ano, this.valor, this.classificacao, this.funcao, this.cor);
- 
- 
-  String formatMoeda(){
-    final format = new NumberFormat("#,##0.00", "en_US");
-    return format.format(valor);
-  }
+
 
   String valorEmString(){
     NumberFormat formatter = NumberFormat("0.00");

@@ -54,24 +54,35 @@ flutter:
     - family: Josefin Sans
       fonts:
         - asset: fonts/JosefinSans-Regular.ttf
+    
     - family: Indie Flower
       fonts:
         - asset: fonts/IndieFlower-Regular.ttf
+    
     - family: Abel
       fonts:
         - asset: fonts/Abel-Regular.ttf
+    
     - family: Righteous
       fonts:
         - asset: fonts/Righteous-Regular.ttf
+    
     - family: Poppins
       fonts:
         - asset: fonts/Poppins-SemiBold.ttf
+    
+    - family: Poppins-Regular
+      fonts:
+        - asset: fonts/Poppins-Regular.ttf
+    
     - family: PoiretOne
       fonts:
         - asset: fonts/PoiretOne-Regular.ttf
+    
     - family: Lobster
       fonts:
         - asset: fonts/Lobster-Regular.ttf
+    
     - family: Roboto
       fonts:
         - asset: fonts/Roboto-Regular.ttf

@@ -1,9 +1,5 @@
 import 'package:fiscaliza_cidadao/controller/controller.dart';
 import "package:flutter/material.dart";
-import 'package:fiscaliza_cidadao/view/tela_sobre.dart';
-import 'package:fiscaliza_cidadao/view/tela_pesquisa.dart';
-import 'package:fiscaliza_cidadao/view/tela_contato.dart';
-import 'package:fiscaliza_cidadao/view/tela_ajuda.dart';
 
 class ControllerTelaHome extends Controller {
   

@@ -11,12 +11,10 @@ class ClassificacaoDespesaMoeda{
   ClassificacaoDespesaMoeda(this.ano, this.valor, this.tipo, this.cor);
 
   double valorEmMilhoes(){
-    NumberFormat formatter = NumberFormat("0.00");
     return valor/1000000;
   }
 
   double valorEmMilhares(){
-    NumberFormat formatter = NumberFormat("0.00");
     return valor/1000;
   }
 

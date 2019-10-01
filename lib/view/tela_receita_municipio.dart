@@ -25,7 +25,7 @@ class TelaReceitaMunicipio extends StatefulWidget {
 
 class _TelaReceitaMunicipio extends State<TelaReceitaMunicipio> {
   Receita receita;
-  String nome;
+  String nome, tipoDeMaiorValor = "";
   bool moedaSelect = true;
   List<ClassificacaoReceitaMoeda> listaClassificacaoReceitaMoeda;
   List<ClassificacaoReceitaPorcentagem> listaClassificacaoReceitaPorcentagem;
@@ -38,58 +38,13 @@ class _TelaReceitaMunicipio extends State<TelaReceitaMunicipio> {
 
   @override
   void initState() {
+    tipoDeMaiorValor = "";
     graficoReceitasLiquidadas = componentePreLoading();
     listaClassificacaoReceitaMoeda = new List<ClassificacaoReceitaMoeda>();
     listaClassificacaoReceitaPorcentagem = new List<ClassificacaoReceitaPorcentagem>();
     buscarDespesas(this.receita.codigo.toString(), this.receita.ano.toString());
     moedaSelect = true;
     super.initState();
-  }
-
-  buscarDespesas(String codigo, String ano) async {
-    final response = await http.get(
-        Utils.API + 'receita/funcao/municipio/' +
-            codigo +
-            '/ano/' +
-            ano);
-    if (response.statusCode == 200) {
-      List<dynamic> dados = jsonDecode(response.body);
-
-      List<dynamic> receitas = dados[0]['despesas'];
-      int i = 0;
-      receitas.forEach((receita) {
-            listaClassificacaoReceitaMoeda.add(
-              new ClassificacaoReceitaMoeda(int.parse(ano), receita['valor'],
-                  receita['funcao'].toString(), getCor(i)),
-            );
-            listaClassificacaoReceitaPorcentagem.add(            
-              new ClassificacaoReceitaPorcentagem(int.parse(ano), ((receita['valor'])/this.receita.valor)*100,
-                  receita['funcao'].toString(), getCor(i)),
-            );
-            i++;
-       
-      });
-
-      
-      setState(() {
-         graficoReceitasLiquidadas = graficoDeBarrasClassificacaoReceitaMoeda(listaClassificacaoReceitaMoeda, this.receita.codigo);
-
-      });
-     
-    } else {
-      print('Failed to load post');
-    }
-  }
-
-  void setMoedaSelect(bool value) {
-    setState(() {
-      moedaSelect = value;
-      if(value){
-        graficoReceitasLiquidadas = graficoDeBarrasClassificacaoReceitaMoeda(listaClassificacaoReceitaMoeda, receita.codigo);
-      }else{
-        graficoReceitasLiquidadas = graficoDeBarrasClassificacaoReceitaPorcentagem(listaClassificacaoReceitaPorcentagem, receita.codigo);
-      }
-    });
   }
 
   @override
@@ -105,7 +60,20 @@ class _TelaReceitaMunicipio extends State<TelaReceitaMunicipio> {
               moedaSelect
                   ? componenteMenuDados(Colors.cyan, Colors.white)
                   : componenteMenuDados(Colors.white, Colors.cyan),
- 
+
+              Padding(
+                          padding: EdgeInsets.only(
+                              top: 20, bottom: 40, left: 40, right: 40),
+                          child:
+                  Text(
+                    '\t\t\t\t\t\t A maior parte da arrecadação do município de '+this.nome+' vem de '+tipoDeMaiorValor+''+getTextoExplicacao()+'.',
+                    textAlign: TextAlign.justify,
+                    style: TextStyle(
+                fontFamily: 'Poppins-Regular', fontSize: 15, color: Colors.black87),
+                  ),
+                          
+              ),
+
               new Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
@@ -127,20 +95,95 @@ class _TelaReceitaMunicipio extends State<TelaReceitaMunicipio> {
                   children: <Widget>[
                     new SizedBox(
                         width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height * 0.5,
+                        height: MediaQuery.of(context).orientation == Orientation.portrait ? MediaQuery.of(context).size.height * 0.4 : MediaQuery.of(context).size.height * 0.8,
                         child: new Padding(
                           padding: new EdgeInsets.all(20),
                           child: graficoReceitasLiquidadas
                             
     
                         ))
-                  ])
+                  ]),
+              
+              Padding(
+                  padding: EdgeInsets.only(top: 20, bottom: 0, left: 30, right: 30),
+                    child: RichText(
+                    textAlign: TextAlign.justify,
+                    text: new TextSpan(
+                      style: new TextStyle(
+                        fontFamily: 'Poppins-Regular', 
+                        fontSize: 15, 
+                        color: Colors.black87
+                      ),
+                      children: <TextSpan>[
+                        new TextSpan(text: 'LEGENDA', style: new TextStyle(fontFamily: 'Poppins-Regular', fontSize: 15, color: Colors.black, fontWeight: FontWeight.bold)),
+                        new TextSpan(text: '\nCor.', style: new TextStyle(fontFamily: 'Poppins-Regular', fontSize: 15, color: Colors.black, fontWeight: FontWeight.bold)),
+                        new TextSpan(text: ' - Receitas Correntes'),
+                        new TextSpan(text: '\nCap.', style: new TextStyle(fontFamily: 'Poppins-Regular', fontSize: 15, color: Colors.black, fontWeight: FontWeight.bold)),
+                        new TextSpan(text: ' - Receitas de Capital'),
+                        new TextSpan(text: '\nCap. Int.', style: new TextStyle(fontFamily: 'Poppins-Regular', fontSize: 15, color: Colors.black, fontWeight: FontWeight.bold)),
+                        new TextSpan(text: ' - Receitas de Capital - Intraorçamentárias'),
+                        new TextSpan(text: '\nCor. Int.', style: new TextStyle(fontFamily: 'Poppins-Regular', fontSize: 15, color: Colors.black, fontWeight: FontWeight.bold)),
+                        new TextSpan(text: ' - Receitas Correntes - Intraorçamentárias'),
+                      ],
+                    ),
+                  )              
+                ),
             ],
           ),
         ),
       ]))
     ]));
   }
+
+  
+  buscarDespesas(String codigo, String ano) async {
+    final response = await http.get(
+        Utils.api + 'receita/funcao/municipio/' +
+            codigo +
+            '/ano/' +
+            ano);
+    if (response.statusCode == 200) {
+      List<dynamic> dados = jsonDecode(response.body);
+
+      List<dynamic> receitas = dados[0]['despesas'];
+      int i = 0;
+      
+      receitas.forEach((receita) {
+            listaClassificacaoReceitaMoeda.add(
+              new ClassificacaoReceitaMoeda(int.parse(ano), receita['valor'],
+                  receita['funcao'].toString(), getCor(i)),
+            );
+            listaClassificacaoReceitaPorcentagem.add(            
+              new ClassificacaoReceitaPorcentagem(int.parse(ano), ((receita['valor'])/this.receita.valor)*100,
+                  receita['funcao'].toString(), getCor(i)),
+            );
+            i++;
+       
+      });
+
+      
+      setState(() {
+        tipoDeMaiorValor = receitas[0]['funcao'];
+         graficoReceitasLiquidadas = graficoDeBarrasClassificacaoReceitaMoeda(listaClassificacaoReceitaMoeda, this.receita.codigo);
+
+      });
+     
+    } else {
+      print('Failed to load post');
+    }
+  }
+
+  void setMoedaSelect(bool value) {
+    setState(() {
+      moedaSelect = value;
+      if(value){
+        graficoReceitasLiquidadas = graficoDeBarrasClassificacaoReceitaMoeda(listaClassificacaoReceitaMoeda, receita.codigo);
+      }else{
+        graficoReceitasLiquidadas = graficoDeBarrasClassificacaoReceitaPorcentagem(listaClassificacaoReceitaPorcentagem, receita.codigo);
+      }
+    });
+  }
+
 
   Widget componentePreLoading(){
     return new Column(
@@ -166,7 +209,7 @@ class _TelaReceitaMunicipio extends State<TelaReceitaMunicipio> {
             height: 30.0,
             decoration: new BoxDecoration(
               color: color1,
-              border: new Border.all(color: color2, width: 1.0),
+              border: new Border.all(color: Colors.cyan, width: 1.0),
               borderRadius: new BorderRadius.only(
                   topLeft: Radius.circular(20),
                   bottomLeft: Radius.circular(20)),
@@ -190,7 +233,7 @@ class _TelaReceitaMunicipio extends State<TelaReceitaMunicipio> {
             margin: EdgeInsets.only(right: 20),
             decoration: new BoxDecoration(
               color: color2,
-              border: new Border.all(color: color1, width: 1.0),
+              border: new Border.all(color: Colors.cyan, width: 1.0),
               borderRadius: new BorderRadius.only(
                   topRight: Radius.circular(20),
                   bottomRight: Radius.circular(20)),
@@ -282,7 +325,10 @@ class _TelaReceitaMunicipio extends State<TelaReceitaMunicipio> {
       animate: true,
       animationDuration: Duration(seconds: 1),
       vertical: false,
-      barRendererDecorator: new charts.BarLabelDecorator<String>(),
+      defaultRenderer: new charts.BarRendererConfig(
+          cornerStrategy: const charts.ConstCornerStrategy(30),
+          barRendererDecorator: new charts.BarLabelDecorator<String>(),      
+      ),
       domainAxis: new charts.OrdinalAxisSpec(
           renderSpec: new charts.SmallTickRendererSpec(
               minimumPaddingBetweenLabelsPx: 0,
@@ -311,7 +357,10 @@ class _TelaReceitaMunicipio extends State<TelaReceitaMunicipio> {
       animate: true,
       animationDuration: Duration(seconds: 1),
       vertical: false,
-      barRendererDecorator: new charts.BarLabelDecorator<String>(),
+      defaultRenderer: new charts.BarRendererConfig(
+          cornerStrategy: const charts.ConstCornerStrategy(30),
+          barRendererDecorator: new charts.BarLabelDecorator<String>(),      
+      ),
       domainAxis: new charts.OrdinalAxisSpec(
           renderSpec: new charts.SmallTickRendererSpec(
               minimumPaddingBetweenLabelsPx: 0,
@@ -338,20 +387,13 @@ class _TelaReceitaMunicipio extends State<TelaReceitaMunicipio> {
       Colors.red,
       Colors.blue,
       Colors.green,
-      Colors.cyan,
-      Colors.blueAccent,
       Colors.purple,
       Colors.grey,
       Colors.indigo,
       Colors.orange,
       Colors.orangeAccent,
-      Colors.amber,
-      Colors.amberAccent,
-      Colors.lime,
-      Colors.yellow,
       Colors.pink,
       Colors.teal,
-      Colors.tealAccent
     ];
 
     list.shuffle();
@@ -360,6 +402,21 @@ class _TelaReceitaMunicipio extends State<TelaReceitaMunicipio> {
       return list[index];
     } else {
       return list[0];
+    }
+  }
+
+
+  String getTextoExplicacao(){
+    if(tipoDeMaiorValor == ''){
+      return '';
+    }else if(tipoDeMaiorValor == 'Receitas Correntes'){
+      return ', que é formada pelos recursos arrecadados que incrementam o patrimônio do Estado como prestação de serviços, atividades industriais, e os impostos, taxas e contribuições que pagamos.';
+    }else if(tipoDeMaiorValor == 'Receitas de Capital'){
+      return ', que ocorre quando os recursos são obtidos, por exemplo, através de empréstimos e da venda do patrimônio público.';
+    }else if(tipoDeMaiorValor == 'Receitas Correntes - Intraorçamentárias'){
+      return '';
+    }else{
+      return '';
     }
   }
 }
