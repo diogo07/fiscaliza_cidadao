@@ -64,13 +64,13 @@ class ClassificacaoReceitaMoeda{
 
   String getTipo(){
     if(tipo == 'Receitas Correntes'){
-      return 'Cor.';
+      return 'R. Cor.';
     }else if(tipo == 'Receitas de Capital'){
-      return 'Cap.';
+      return 'R. Cap.';
     }else if(tipo == 'Receitas Correntes - Intraorçamentárias'){
-      return 'Cor. Int.';
+      return 'R. Cor. Int.';
     }else{
-      return 'Cap. Int.';
+      return 'R. Cap. Int.';
     }
   }
 

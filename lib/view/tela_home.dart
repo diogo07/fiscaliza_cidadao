@@ -2,6 +2,7 @@ import 'package:fiscaliza_cidadao/controller/controller.dart';
 import 'package:fiscaliza_cidadao/view/tela_ajuda.dart';
 import 'package:fiscaliza_cidadao/view/tela_consultas_personalizadas.dart';
 import 'package:fiscaliza_cidadao/view/tela_contato.dart';
+import 'package:fiscaliza_cidadao/view/tela_escolha_tipo_ranking.dart';
 import 'package:fiscaliza_cidadao/view/tela_pesquisa.dart';
 import 'package:fiscaliza_cidadao/view/tela_rankings.dart';
 import 'package:fiscaliza_cidadao/view/tela_sobre.dart';
@@ -32,7 +33,7 @@ class TelaHome extends StatelessWidget{
                   mainAxisAlignment: MainAxisAlignment.center,                  
                   children: <Widget>[
                     componentCard(context, "\nMunicípios", TelaPesquisaMunicipios(), Icons.search),
-                    componentCard(context, "\nRankings", TelaRankings(), Icons.insert_chart),
+                    componentCard(context, "\nRankings", TelaEscolhaTipoRanking(), Icons.insert_chart),
                     componentCard(context, "\nComparações", TelaConsultasPersonalizas(), Icons.compare),
                                     
                   ],  

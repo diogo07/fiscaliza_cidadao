@@ -17,7 +17,7 @@ class GradientAppBar extends StatelessWidget {
 
     return new Container(
       padding: new EdgeInsets.only(top: statusBarHeight),
-      height: MediaQuery.of(context).orientation == Orientation.portrait ? statusBarHeight + barHeight: statusBarHeight + 70,
+      height: MediaQuery.of(context).orientation == Orientation.portrait ? statusBarHeight + barHeight: statusBarHeight + 65,
       decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage("assets/images/background.jpg"),
@@ -35,7 +35,7 @@ class GradientAppBar extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[ 
                   new Padding(
-                    padding: EdgeInsets.only(bottom: 20, left: 20),
+                    padding: EdgeInsets.only(top:10, bottom: 15, left: 20),
                     child: new Text(
                       title,
                       style: const TextStyle(
@@ -63,7 +63,7 @@ class GradientAppBar extends StatelessWidget {
                         child: new InkWell(
                           child: new Icon(
                             Icons.exit_to_app,
-                            size: 28,
+                            size: 24,
                             color: Colors.white,                          
                           ),
                           onTap: () => 

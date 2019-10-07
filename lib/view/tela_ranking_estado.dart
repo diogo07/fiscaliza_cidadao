@@ -9,11 +9,13 @@ import 'dart:convert';
 
 import 'package:toast/toast.dart';
 
-class TelaRankings extends StatefulWidget {
-  _TelaRankings createState() => new _TelaRankings();
+class TelaRankingEstado extends StatefulWidget {
+  String uf;
+  TelaRankingEstado(this.uf);
+  _TelaRankingEstado createState() => new _TelaRankingEstado(this.uf);
 }
 
-class _TelaRankings extends State<TelaRankings> {
+class _TelaRankingEstado extends State<TelaRankingEstado> {
   List<MunicipioRanking> listaMunicipiosEducacao,
       listaMunicipiosSaude,
       listaMunicipiosSaneamento;
@@ -22,6 +24,11 @@ class _TelaRankings extends State<TelaRankings> {
       graficoMunicipiosSaneamento;
   int anoEducacao, anoSaude, anoSaneamento;
   bool exibirTextoEducacao, exibirTextoSaude, exibirTextoSaneameto;
+  String uf;
+ 
+ 
+  _TelaRankingEstado(this.uf);
+
 
   @override
   void initState() {
@@ -47,7 +54,7 @@ class _TelaRankings extends State<TelaRankings> {
   Widget build(BuildContext context) {
     return new Scaffold(
         body: new Column(children: <Widget>[
-      new GradientAppBarBack("Rankings"),
+      new GradientAppBarBack("Rankings - "+this.uf),
       new Expanded(
           child: new ListView(shrinkWrap: true, children: <Widget>[
         new Center(
@@ -71,9 +78,6 @@ class _TelaRankings extends State<TelaRankings> {
                   color: Colors.black87),
             ),
           ) : Container(),
-
-          
-
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
@@ -84,7 +88,7 @@ class _TelaRankings extends State<TelaRankings> {
             ],
           ),
 
-          Padding(
+           Padding(
                           padding: EdgeInsets.only(
                               top: 0, bottom: 0, left: 40, right: 40),
                           child:
@@ -195,7 +199,7 @@ class _TelaRankings extends State<TelaRankings> {
             padding: EdgeInsets.only(top: 20, bottom: 20, left: 20, right: 20),
             child: Text(
               '\t\t\t\t\t\tLogo abaixo são exibidos os dez municípios que destinaram a maior parte de sua arrecadação para a área de Saneamento Básico, no ano de ' +
-                  anoSaneamento.toString() +
+                  anoSaude.toString() +
                   '. Tocando no menu do lado direito abaixo, você também pode verificar esse ranking em outros anos.',
               textAlign: TextAlign.justify,
               style: TextStyle(
@@ -260,7 +264,7 @@ class _TelaRankings extends State<TelaRankings> {
     if ((connectivityResult == ConnectivityResult.mobile) ||
         (connectivityResult == ConnectivityResult.wifi)) {
       final response = await http.get(Utils.api +
-          'rankings/area/' +
+          'rankings/uf/'+siglaEstado(this.uf)+'/area/' +
           codigoArea.toString() +
           '/ano/' +
           ano.toString());
@@ -763,5 +767,122 @@ class _TelaRankings extends State<TelaRankings> {
           break;
       }
     });
+  }
+
+
+  String siglaEstado(String estadoNome){
+    switch (estadoNome) {
+      case "Acre":
+        return "AC";
+        break;
+      
+      case "Alagoas":
+        return "AL";
+        break;
+      
+      case "Amapá":
+        return "AP";
+        break;
+      
+      case "Amazonas":
+        return "AM";
+        break;
+      
+      case "Bahia":
+        return "BA";
+        break;
+      
+      case "Ceará":
+        return "CE";
+        break;
+      
+      case "Distrito Federal":
+        return "DF";
+        break;
+
+      case "Espírito Santo":
+        return "ES";
+        break;
+
+      case "Goiás":
+        return "GO";
+        break;
+
+      case "Maranhão":
+        return "MA";
+        break;
+      
+      case "Mato Grosso":
+        return "MT";
+        break;
+
+      case "Mato Grosso do Sul":
+        return "MS";
+        break;
+
+      case "Minas Gerais":
+        return "MG";
+        break;
+
+      case "Pará":
+        return "PA";
+        break;
+      
+      case "Paraíba":
+        return "PB";
+        break;
+
+      case "Paraná":
+        return "PR";
+        break;
+      
+      case "Pernambuco":
+        return "PE";
+        break;
+
+      case "Piauí":
+        return "PI";
+        break;
+
+      case "Rio de Janeiro":
+        return "RJ";
+        break;
+
+      case "Rio Grande do Norte":
+        return "RN";
+        break;
+
+      case "Rio Grande do Sul":
+        return "RS";
+        break;
+      
+      case "Rondônia":
+        return "RO";
+        break;
+
+      case "Roraima":
+        return "RR";
+        break;
+
+      case "Santa Catarina":
+        return "SC";
+        break;
+
+      case "São Paulo":
+        return "SP";
+        break;
+
+      case "Sergipe":
+        return "SE";
+        break;
+
+      case "Tocantins":
+        return "TO";
+        break;
+      
+      default:
+        return "";
+        break;
+      }
   }
 }

@@ -225,60 +225,11 @@ class _TelaDespesaMunicipio extends State<TelaDespesaMunicipio> {
         ));
   }
 
-  static List<charts.Series<ClassificacaoDespesaMoeda, String>>
-      gerarSeriesClassificacaoDespesaMoeda(
-          List<ClassificacaoDespesaMoeda> despesas, int codigoMunicipio) {
-    return [
-      new charts.Series<ClassificacaoDespesaMoeda, String>(
-          id: codigoMunicipio.toString(),
-          domainFn: (ClassificacaoDespesaMoeda despesa, _) => despesa.tipo,
-          measureFn: (ClassificacaoDespesaMoeda despesa, _) => despesa.valor,
-          data: despesas,
-          insideLabelStyleAccessorFn: (ClassificacaoDespesaMoeda despesa, _) =>
-              charts.TextStyleSpec(
-                  fontFamily: 'Poppins',
-                  fontSize: 12, // size in Pts.
-                  color: charts.MaterialPalette.white),
-          outsideLabelStyleAccessorFn: (ClassificacaoDespesaMoeda despesa, _) =>
-              charts.TextStyleSpec(
-                  fontFamily: 'Poppins',
-                  fontSize: 12, // size in Pts.
-                  color: charts.MaterialPalette.black),
-          colorFn: (ClassificacaoDespesaMoeda despesa, _) =>
-              charts.ColorUtil.fromDartColor(despesa.cor),
-          labelAccessorFn: (ClassificacaoDespesaMoeda despesa, _) =>
-              despesa.valorEmString())
-    ];
-  }
+  
 
-  static List<charts.Series<ClassificacaoDespesaPorcentagem, String>>
-      gerarSeriesClassificacaoDespesaPorPorcentagem(
-          List<ClassificacaoDespesaPorcentagem> despesas, int codigoMunicipio) {
-    return [
-      new charts.Series<ClassificacaoDespesaPorcentagem, String>(
-          id: codigoMunicipio.toString(),
-          domainFn: (ClassificacaoDespesaPorcentagem d, _) => d.tipo,
-          measureFn: (ClassificacaoDespesaPorcentagem d, _) => d.valor,
-          data: despesas,
-          insideLabelStyleAccessorFn: (ClassificacaoDespesaPorcentagem d, _) =>
-              charts.TextStyleSpec(
-                  fontFamily: 'Poppins',
-                  fontSize: 12, // size in Pts.
-                  color: charts.MaterialPalette.white),
-          outsideLabelStyleAccessorFn: (ClassificacaoDespesaPorcentagem d, _) =>
-              charts.TextStyleSpec(
-                  fontFamily: 'Poppins',
-                  fontSize: 12, // size in Pts.
-                  color: charts.MaterialPalette.black),
-          colorFn: (ClassificacaoDespesaPorcentagem d, _) =>
-              charts.ColorUtil.fromDartColor(d.cor),
-          labelAccessorFn: (ClassificacaoDespesaPorcentagem d, _) =>
-              ' ${d.formatPorcentagem()}%')
-    ];
-  }
-
-  static Widget graficoDeBarrasClassificacaoDespesaMoeda(
+  Widget graficoDeBarrasClassificacaoDespesaMoeda(
       List<ClassificacaoDespesaMoeda> despesas, int codigoMunicipio) {
+
     return new charts.BarChart(
       gerarSeriesClassificacaoDespesaMoeda(despesas, codigoMunicipio),
       animate: true,
@@ -309,7 +260,7 @@ class _TelaDespesaMunicipio extends State<TelaDespesaMunicipio> {
     );
   }
 
-  static Widget graficoDeBarrasClassificacaoDespesaPorcentagem(
+  Widget graficoDeBarrasClassificacaoDespesaPorcentagem(
       List<ClassificacaoDespesaPorcentagem> despesas, int codigoMunicipio) {
     return new charts.BarChart(
       gerarSeriesClassificacaoDespesaPorPorcentagem(despesas, codigoMunicipio),
@@ -339,6 +290,58 @@ class _TelaDespesaMunicipio extends State<TelaDespesaMunicipio> {
         //     color: charts.MaterialPalette.black)
       )),
     );
+  }
+
+  List<charts.Series<ClassificacaoDespesaMoeda, String>>
+      gerarSeriesClassificacaoDespesaMoeda(
+          List<ClassificacaoDespesaMoeda> despesas, int codigoMunicipio) {
+    return [
+      new charts.Series<ClassificacaoDespesaMoeda, String>(
+          id: codigoMunicipio.toString(),
+          domainFn: (ClassificacaoDespesaMoeda despesa, _) => despesa.tipo,
+          measureFn: (ClassificacaoDespesaMoeda despesa, _) => despesa.valor,
+          data: despesas,
+          insideLabelStyleAccessorFn: (ClassificacaoDespesaMoeda despesa, _) =>
+              charts.TextStyleSpec(
+                  fontFamily: 'Poppins',
+                  fontSize: 12, // size in Pts.
+                  color: charts.MaterialPalette.white),
+          outsideLabelStyleAccessorFn: (ClassificacaoDespesaMoeda despesa, _) =>
+              charts.TextStyleSpec(
+                  fontFamily: 'Poppins',
+                  fontSize: 12, // size in Pts.
+                  color: charts.MaterialPalette.black),
+          colorFn: (ClassificacaoDespesaMoeda despesa, _) =>
+              charts.ColorUtil.fromDartColor(despesa.cor),
+          labelAccessorFn: (ClassificacaoDespesaMoeda despesa, _) =>
+              despesa.valorEmString())
+    ];
+  }
+
+  List<charts.Series<ClassificacaoDespesaPorcentagem, String>>
+      gerarSeriesClassificacaoDespesaPorPorcentagem(
+          List<ClassificacaoDespesaPorcentagem> despesas, int codigoMunicipio) {
+    return [
+      new charts.Series<ClassificacaoDespesaPorcentagem, String>(
+          id: codigoMunicipio.toString(),
+          domainFn: (ClassificacaoDespesaPorcentagem d, _) => d.tipo,
+          measureFn: (ClassificacaoDespesaPorcentagem d, _) => d.valor,
+          data: despesas,
+          insideLabelStyleAccessorFn: (ClassificacaoDespesaPorcentagem d, _) =>
+              charts.TextStyleSpec(
+                  fontFamily: 'Poppins',
+                  fontSize: 12, // size in Pts.
+                  color: charts.MaterialPalette.white),
+          outsideLabelStyleAccessorFn: (ClassificacaoDespesaPorcentagem d, _) =>
+              charts.TextStyleSpec(
+                  fontFamily: 'Poppins',
+                  fontSize: 12, // size in Pts.
+                  color: charts.MaterialPalette.black),
+          colorFn: (ClassificacaoDespesaPorcentagem d, _) =>
+              charts.ColorUtil.fromDartColor(d.cor),
+          labelAccessorFn: (ClassificacaoDespesaPorcentagem d, _) =>
+              ' ${d.formatPorcentagem()}%')
+    ];
   }
 
   String classificacaoDespesas(String tipo) {

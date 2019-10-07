@@ -238,37 +238,54 @@ class _TelaMunicipio extends State<TelaMunicipio> {
       });
     } else {
       Toast.show("Ocorreu um erro ao atualizar as informações, tente novamente!", context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM);
+      setState((){
+        graficoReceitasAnuais = recarregarGraficoReceitas(query);
+      });
     }
     }else{
-      setState((){
-      });
+      
       Toast.show("Sem conexão com a internet!", context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM);
+      setState((){
+        graficoReceitasAnuais = recarregarGraficoReceitas(query);
+      });
     }
   }
 
   buscarDespesas(String query) async {
-    final response = await http
-        .get(Utils.api + 'despesa/municipio/' + query);
-    if (response.statusCode == 200) {
-      List<dynamic> dados = jsonDecode(response.body);
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if ((connectivityResult == ConnectivityResult.mobile) || (connectivityResult == ConnectivityResult.wifi)) {
 
-      despesas = dados[0]['despesas'];
-      
-      despesas.forEach((despesa){
-        if(despesa['classificacao'] == 'Despesas Liquidadas'){
-          listaDespesas.add(new Despesa(int.parse(query), despesa['ano'], despesa['valor'],
-            'Despesas Liquidadas', null, Colors.red),);
-        }
-      });
+      final response = await http
+          .get(Utils.api + 'despesa/municipio/' + query);
+      if (response.statusCode == 200) {
+        List<dynamic> dados = jsonDecode(response.body);
 
-      calcularMediaDespesas();
-      setAnosDespesa();
+        despesas = dados[0]['despesas'];
+        
+        despesas.forEach((despesa){
+          if(despesa['classificacao'] == 'Despesas Liquidadas'){
+            listaDespesas.add(new Despesa(int.parse(query), despesa['ano'], despesa['valor'],
+              'Despesas Liquidadas', null, Colors.red),);
+          }
+        });
 
-      setState(() {
-        graficoDespesasAnuais = Graficos.graficoDeBarrasDespesa(listaDespesas, this.codigo, this.nome, context);
-      });
+        calcularMediaDespesas();
+        setAnosDespesa();
+
+        setState(() {
+          graficoDespesasAnuais = Graficos.graficoDeBarrasDespesa(listaDespesas, this.codigo, this.nome, context);
+        });
+      }else{
+        Toast.show("Ocorreu um erro ao atualizar as informações, tente novamente!", context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM);
+        setState((){
+          graficoDespesasAnuais = recarregarGraficoDespesas(query);
+        });
+      }
     } else {
-      print('Failed to load post');
+      Toast.show("Sem conexão com a internet!", context, duration: Toast.LENGTH_LONG, gravity:  Toast.BOTTOM);
+      setState((){
+        graficoDespesasAnuais = recarregarGraficoDespesas(query);
+      });
     }
   }
 
@@ -438,13 +455,92 @@ class _TelaMunicipio extends State<TelaMunicipio> {
 
   String getTextoTipoDespesa(){
     if(this.tipoDespesas == 'Valor Empenhado'){
-      return "As despesas empenhadas correspondem aos valores reservados para os gastos planejados pelo município.";
+      return "As despesas empenhadas correspondem aos valores reservados para os gastos planejados pelo município";
     }else if(this.tipoDespesas == 'Valor Liquidado'){
-      return "As despesas liquidadas correspondem aos valores das despesas concretizadas pelo município.";
+      return "As despesas liquidadas correspondem aos valores das despesas concretizadas pelo município";
     }else if(this.tipoDespesas == 'Valor Pago'){
-      return "As despesas pagas ocorrem quando o município de fato realiza o pagamento pelo serviço ou produto disponibilizado.";
+      return "As despesas pagas ocorrem quando o município de fato realiza o pagamento pelo serviço ou produto disponibilizado";
     }else{
-      return "Os restos a pagar correspondem as despesas liquidadas que o município não concretizou o pagamento dentro do ano planejado.";
+      return "Os restos a pagar correspondem as despesas liquidadas que o município não concretizou o pagamento dentro do ano planejado";
     }
+  }
+
+  Widget recarregarGraficoReceitas(String query) {
+    return new Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Container(
+            margin: const EdgeInsets.only(top: 10.0),
+            child: new RaisedButton(
+              padding: EdgeInsets.all(10.0),              
+              child: const Text(
+                'Tente novamente',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontFamily: "Poppins",
+                  fontSize: 14,
+                ),
+              ),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0)),
+              color: Colors.blue[300],
+              elevation: 4.0,
+              splashColor: Colors.blueGrey,
+              onPressed: () {
+                setState(() {
+                  graficoReceitasAnuais =  componentePreLoading();
+                });
+                buscarReceitas(query);
+
+              },
+            )),
+      ],
+    );
+  }
+
+
+  Widget recarregarGraficoDespesas(String query) {
+    return new Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        Container(
+            margin: const EdgeInsets.only(top: 10.0),
+            child: new RaisedButton(
+              padding: EdgeInsets.all(10.0),              
+              child: const Text(
+                'Tente novamente',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontFamily: "Poppins",
+                  fontSize: 14,
+                ),
+              ),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0)),
+              color: Colors.blue[300],
+              elevation: 4.0,
+              splashColor: Colors.blueGrey,
+              onPressed: () {
+                setState(() {
+                  graficoDespesasAnuais =  componentePreLoading();
+                });
+                buscarDespesas(query);
+
+              },
+            )),
+      ],
+    );
+  }
+
+  Widget componentePreLoading() {
+    return new Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: <Widget>[
+        new CircularProgressIndicator(),
+      ],
+    );
   }
 }

@@ -31,112 +31,129 @@ class _TelaPesquisaMunicipios extends State<TelaPesquisaMunicipios> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      body: new Column(children: <Widget>[
-        new GradientAppBarBack('Municípios'),
-        new Expanded(
-            child: new Center(
-                child: new Column(children: <Widget>[
-          new Container(
-            margin: new EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            padding: EdgeInsets.all(15.0),
-            child: Text(
-              "Digite o nome do município",
-              style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 15,
-                  fontWeight: FontWeight.normal,
-                  fontFamily: "Poppins"),
-            ),
-          ),
-          new Container(
-            margin: new EdgeInsets.symmetric(horizontal: 20, vertical: 0),
-            padding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
-            child: new Column(
-              children: <Widget>[
-                new Row(children: <Widget>[
-                  new Expanded(
-                    child: TextField(
-                      controller: editingController,
-                      decoration: new InputDecoration(
-                        labelText: "Nome município",
-                        prefixIcon: Icon(Icons.search),
-                        suffixIcon: IconButton(
-                            icon: Icon(Icons.close),
-                            onPressed: (){
-                              setState(() {
-                               WidgetsBinding.instance.addPostFrameCallback((_) => editingController.clear());
-                               municipios.clear();
-                              });
-                            }
+        body: Column(children: <Widget>[
+      GradientAppBarBack('Municípios'),
+      Expanded(
+        child: Center(
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding:
+                    EdgeInsets.only(top: 20, bottom: 20, left: 40, right: 40),
+                child: Text(
+                  '\t\t\t\t\t\tVocê pode pesquisar um município pelo nome e verificar as arrecadações e gastos que ele obteve anualmente.',
+                  textAlign: TextAlign.justify,
+                  style: TextStyle(
+                      fontFamily: 'Poppins-Regular',
+                      fontSize: 15,
+                      color: Colors.black87),
+                ),
+              ),
+              Container(
+                margin: new EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                padding: EdgeInsets.all(15.0),
+                child: Text(
+                  "Digite o nome do município",
+                  style: TextStyle(
+                      color: Colors.black54,
+                      fontSize: 15,
+                      fontWeight: FontWeight.normal,
+                      fontFamily: "Poppins"),
+                ),
+              ),
+              Container(
+                margin: new EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+                padding: EdgeInsets.symmetric(horizontal: 0.0, vertical: 0.0),
+                child: new Column(
+                  children: <Widget>[
+                    new Row(children: <Widget>[
+                      new Expanded(
+                        child: TextField(
+                          controller: editingController,
+                          decoration: new InputDecoration(
+                            labelText: "Nome município",
+                            prefixIcon: Icon(Icons.search),
+                            suffixIcon: IconButton(
+                                icon: Icon(Icons.close),
+                                onPressed: () {
+                                  setState(() {
+                                    WidgetsBinding.instance
+                                        .addPostFrameCallback(
+                                            (_) => editingController.clear());
+                                    municipios.clear();
+                                  });
+                                }),
+                            fillColor: Colors.white,
+                            border: new OutlineInputBorder(
+                              borderRadius: new BorderRadius.circular(30.0),
+                              borderSide: new BorderSide(),
+                            ),
                           ),
-                        fillColor: Colors.white,
-                        border: new OutlineInputBorder(
-                          borderRadius: new BorderRadius.circular(30.0),
-                          borderSide: new BorderSide(),
+                          keyboardType: TextInputType.text,
+                          style: new TextStyle(
+                            fontFamily: "Poppins",
+                            fontSize: 14,
+                          ),
                         ),
                       ),
-                      keyboardType: TextInputType.text,
-                      style: new TextStyle(
-                        fontFamily: "Poppins",
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ]),
-                new Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      new Expanded(
-                          child: new Container(
-                              margin: const EdgeInsets.only(top: 10.0),
-                              child: new RaisedButton(
-                                padding: EdgeInsets.all(10.0),
-                                child: const Text(
-                                  'Buscar',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontFamily: "Poppins",
-                                    fontSize: 14,
-                                  ),
-                                ),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30.0)),
-                                color: Colors.blue[300],
-                                elevation: 4.0,
-                                splashColor: Colors.blueGrey,
-                                onPressed: () {
-                                  buscarMunicipios();
-                                },
-                              ))),
-                    ])
-              ],
-            ),
-          ),
-          buscandoMunicipios
-              ? new Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    new Container(
-                      padding: new EdgeInsets.only(top: 10),
-                      child: new CircularProgressIndicator(),
-                    )
+                    ]),
+                    new Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: <Widget>[
+                          new Expanded(
+                              child: new Container(
+                                  margin: const EdgeInsets.only(top: 10.0),
+                                  child: new RaisedButton(
+                                    padding: EdgeInsets.all(10.0),
+                                    child: const Text(
+                                      'Buscar',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontFamily: "Poppins",
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(30.0)),
+                                    color: Colors.blue[300],
+                                    elevation: 4.0,
+                                    splashColor: Colors.blueGrey,
+                                    onPressed: () {
+                                      buscarMunicipios();
+                                    },
+                                  ))),
+                        ])
                   ],
-                )
-              : new Container(),
-          Expanded(
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: municipios.length,
-              itemBuilder: (context, index) {
-                var municipio = municipios[index];
-                return criarCard(municipio);
-              },
-            ),
+                ),
+              ),
+              buscandoMunicipios
+                  ? new Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        new Container(
+                          padding: new EdgeInsets.only(top: 10),
+                          child: new CircularProgressIndicator(),
+                        )
+                      ],
+                    )
+                  : new Container(),
+              Expanded(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: municipios.length,
+                  itemBuilder: (context, index) {
+                    var municipio = municipios[index];
+                    return criarCard(municipio);
+                  },
+                ),
+              ),
+            ],
           ),
-        ])))
-      ]),
-    );
+        ),
+      )
+    ]));
   }
 
   Card criarCard(Municipio municipio) => Card(
@@ -171,7 +188,6 @@ class _TelaPesquisaMunicipios extends State<TelaPesquisaMunicipios> {
         municipio.nome,
         style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
       ),
-
       subtitle: Row(
         children: <Widget>[
           Expanded(
@@ -200,7 +216,7 @@ class _TelaPesquisaMunicipios extends State<TelaPesquisaMunicipios> {
   }
 
   void buscarMunicipios() {
-    if (editingController.text.length > 0) {
+    if (editingController.text.trim().length > 0) {
       FocusScope.of(context).requestFocus(new FocusNode());
       setState(() {
         alterarStatusBusca(true);
@@ -219,48 +235,45 @@ class _TelaPesquisaMunicipios extends State<TelaPesquisaMunicipios> {
     var connectivityResult = await (Connectivity().checkConnectivity());
     if ((connectivityResult == ConnectivityResult.mobile) ||
         (connectivityResult == ConnectivityResult.wifi)) {
- 
-          final response =
-              await http.get(Utils.api + 'municipio/' + query + '/');
-          if (response.statusCode == 200) {
-            print('status 200');
-            List<dynamic> dados = jsonDecode(response.body);
-            List<Municipio> listaMunicipios = new List<Municipio>();
+      final response = await http.get(Utils.api + 'municipio/' + query + '/');
+      if (response.statusCode == 200) {
+        List<dynamic> dados = jsonDecode(response.body);
+        List<Municipio> listaMunicipios = new List<Municipio>();
 
-            if (dados.length > 0) {
-              dados.forEach((dado) {
-                listaMunicipios.add(new Municipio(
-                    dado['codigo'], dado['nome'], dado['uf'], dado['regiao']));
-              });
-              setState(() {
-                buscandoMunicipios = false;
-                municipios.clear();
-                municipios.addAll(listaMunicipios);
-              });
-            } else {
-              print('nenhum municipio encontrado');
-              setState(() {
-                buscandoMunicipios = false;
-                municipios.clear();
-              });
-              Toast.show("Nenhum município encontrado!", context,
-                  duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
-            }
-          } else {
-            print('status erro');
-            setState(() {
-              buscandoMunicipios = false;
-              municipios.clear();
-              Toast.show("Nenhum município encontrado!", context,
-                  duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
-            });
-          }
-        }else{
-          print('Sem internet else');
-           Toast.show("Sem conexão com a internet!", context,
-            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+        if (dados.length > 0) {
+          dados.forEach((dado) {
+            listaMunicipios.add(new Municipio(
+                dado['codigo'], dado['nome'], dado['uf'], dado['regiao']));
+          });
+          setState(() {
+            buscandoMunicipios = false;
+            municipios.clear();
+            municipios.addAll(listaMunicipios);
+          });
+        } else {
+          setState(() {
+            buscandoMunicipios = false;
+            municipios.clear();
+          });
+          Toast.show("Nenhum município encontrado!", context,
+              duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
         }
-
+      } else {
+        setState(() {
+          buscandoMunicipios = false;
+          municipios.clear();
+          Toast.show("Nenhum município encontrado!", context,
+              duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+        });
+      }
+    } else {
+      setState(() {
+        buscandoMunicipios = false;
+        municipios.clear();
+      });
+      Toast.show("Sem conexão com a internet!", context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+    }
   }
 
   // void _showDialog(BuildContext context, String titulo) {

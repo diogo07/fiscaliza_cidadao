@@ -28,7 +28,6 @@ class _TelaConsultasPersonalizas extends State<TelaConsultasPersonalizas> {
 
   @override
   void initState() {
-  
     editingControllerPrimeiroMunicipio = TextEditingController();
     editingControllerPrimeiroMunicipio.addListener(verificarAlteracoesCampoPrimeiroMunicipio);
     editingControllerSegundoMunicipio = TextEditingController();

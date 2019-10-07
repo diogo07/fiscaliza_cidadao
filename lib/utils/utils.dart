@@ -6,6 +6,7 @@ class Utils{
 
   static String removerCaracteresEspeciais(String query){
     query = query.toLowerCase();
+    query = query.trim();
     query = query.replaceAll(' ', '_');
     query = query.replaceAll('ã', '__tila__');
     query = query.replaceAll('õ', '__tilo__');
