@@ -2,7 +2,7 @@ import 'package:intl/intl.dart';
 
 class Utils{
 
-  static final api = "http://op.repsys.com.br/api/"; 
+  static final api = "https://fiscalizacidadao.herokuapp.com/"; 
 
   static String removerCaracteresEspeciais(String query){
     query = query.toLowerCase();
